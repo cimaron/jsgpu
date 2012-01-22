@@ -19,48 +19,62 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-cnvgl_rendering_culling = (function() {
 
-	function Initializer() {
+(function(GPU) {
+
+	GPU.CommandQueue = (function() {
+
+		function Initializer() {
+			this.commands = [];
+			this.timer = null;
+			this.driver = null;
+		}
+
+		var CommandQueue = jClass('CommandQueue', Initializer);
+		
 		//public:
-		this.renderer = null;
-	}
 
-	var cnvgl_rendering_culling = jClass('cnvgl_rendering_culling', Initializer);	
+		CommandQueue.CommandQueue = function(driver) {
+			this.driver = driver;
+		};
 
-	cnvgl_rendering_culling.cnvgl_rendering_culling = function(renderer) {
-		this.renderer = renderer;
-	};
+		CommandQueue.enqueue = function(cmd) {
+			this.commands.push(cmd);
+			this.schedule();
+		};
 
-	cnvgl_rendering_culling.checkCull = function(state, prim) {
-		var dir;
-		if (state.cullFlag) {
+		CommandQueue.process = function() {
+			var command, start, now;
 
-			//always cull if front and back
-			if (state.cullFaceMode == cnvgl.FRONT_AND_BACK) {
-				return true;	
+			this.timer = null;
+			start = new Date().getTime();
+
+			while (this.commands.length > 0) {
+
+				command = this.commands.shift();
+				GPU.execute(command);
+
+				now = new Date().getTime();
+				if (now - start > 100) {
+					this.schedule();
+					return;
+				}
 			}
 
-			dir = this.getPolygonFaceDir(prim);
-			if (!(
-				(dir > 0 && (state.cullFlag == cnvgl.FALSE || state.cullFaceMode == cnvgl.FRONT)) ||
-				(dir < 0 && (state.cullFlag == cnvgl.FALSE || state.cullFaceMode == cnvgl.BACK)))) {
-				return true;
+			this.driver.present();
+		};
+
+		CommandQueue.schedule = function() {
+			var This;
+			if (!this.timer) {
+				This = this;
+				this.timer = setTimeout(function() { This.process(); }, 0);
 			}
-		}
-		return false;
-	};
+		};
+		
+		return CommandQueue.Constructor;
 
-	cnvgl_rendering_culling.getPolygonFaceDir = function(state, prim) {
-		var dir;
-		dir = prim.getDirection();
-		if (state.cullFrontFace == cnvgl.CCW) {
-			dir = -dir;
-		}
-		return dir;
-	};
+	}());
 
-	return cnvgl_rendering_culling.Constructor;
-
-}());
+}(GPU));
 

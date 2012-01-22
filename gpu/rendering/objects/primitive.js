@@ -19,48 +19,52 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-cnvgl_rendering_culling = (function() {
 
-	function Initializer() {
+(function(cnvgl) {
+
+
+	cnvgl.primitive = (function() {
+				
+		function Initializer() {
+			//public:
+			this.mode = null;
+			this.vertices = [];
+			this.sorted = false;
+			this.direction = null;
+		}
+	
+		var cnvgl_primitive = jClass('cnvgl_primitive', Initializer);
+	
 		//public:
-		this.renderer = null;
-	}
-
-	var cnvgl_rendering_culling = jClass('cnvgl_rendering_culling', Initializer);	
-
-	cnvgl_rendering_culling.cnvgl_rendering_culling = function(renderer) {
-		this.renderer = renderer;
-	};
-
-	cnvgl_rendering_culling.checkCull = function(state, prim) {
-		var dir;
-		if (state.cullFlag) {
-
-			//always cull if front and back
-			if (state.cullFaceMode == cnvgl.FRONT_AND_BACK) {
-				return true;	
+	
+		cnvgl_primitive.cnvgl_primitive = function() {
+		};
+	
+	
+		cnvgl_primitive.getDirection = function() {
+			var a, E, i, th, n;
+	
+			if (this.direction) {
+				return this.direction;	
 			}
-
-			dir = this.getPolygonFaceDir(prim);
-			if (!(
-				(dir > 0 && (state.cullFlag == cnvgl.FALSE || state.cullFaceMode == cnvgl.FRONT)) ||
-				(dir < 0 && (state.cullFlag == cnvgl.FALSE || state.cullFaceMode == cnvgl.BACK)))) {
-				return true;
+	
+			n = this.vertices.length;
+			E = 0;
+			for (i = 0; i < n; i++) {
+				th = (i + 1) % n;
+				E += (this.vertices[i].xw * this.vertices[th].yw - this.vertices[th].xw * this.vertices[i].yw);
 			}
-		}
-		return false;
-	};
+			E = E > 0 ? 1 : -1;
+			
+			this.direction = E;
+	
+			return this.direction;
+		};
+	
+		return cnvgl_primitive.Constructor;
+	
+	}());
 
-	cnvgl_rendering_culling.getPolygonFaceDir = function(state, prim) {
-		var dir;
-		dir = prim.getDirection();
-		if (state.cullFrontFace == cnvgl.CCW) {
-			dir = -dir;
-		}
-		return dir;
-	};
 
-	return cnvgl_rendering_culling.Constructor;
-
-}());
+}(cnvgl));
 

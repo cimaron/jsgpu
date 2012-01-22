@@ -19,48 +19,34 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-cnvgl_rendering_culling = (function() {
+(function(cnvgl) {
 
-	function Initializer() {
-		//public:
-		this.renderer = null;
-	}
+	
+	cnvgl.vertex = function(i) {
+		
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+		this.w = 0;
+		
+		this.xd = 0;
+		this.yd = 0;
+		this.zd = 0;
+	
+		this.xw = 0;
+		this.yw = 0;
+		this.zw = 0;
+		
+		this.xc = 0;
+		this.yc = 0;
+		this.zc = 0;
+		
+		this.i = 4 * i;
 
-	var cnvgl_rendering_culling = jClass('cnvgl_rendering_culling', Initializer);	
-
-	cnvgl_rendering_culling.cnvgl_rendering_culling = function(renderer) {
-		this.renderer = renderer;
+		//allocate memory
+		this.varying = cnvgl.malloc(GPU.shader.MAX_VARYING_VECTORS * 4, 4);
 	};
 
-	cnvgl_rendering_culling.checkCull = function(state, prim) {
-		var dir;
-		if (state.cullFlag) {
 
-			//always cull if front and back
-			if (state.cullFaceMode == cnvgl.FRONT_AND_BACK) {
-				return true;	
-			}
-
-			dir = this.getPolygonFaceDir(prim);
-			if (!(
-				(dir > 0 && (state.cullFlag == cnvgl.FALSE || state.cullFaceMode == cnvgl.FRONT)) ||
-				(dir < 0 && (state.cullFlag == cnvgl.FALSE || state.cullFaceMode == cnvgl.BACK)))) {
-				return true;
-			}
-		}
-		return false;
-	};
-
-	cnvgl_rendering_culling.getPolygonFaceDir = function(state, prim) {
-		var dir;
-		dir = prim.getDirection();
-		if (state.cullFrontFace == cnvgl.CCW) {
-			dir = -dir;
-		}
-		return dir;
-	};
-
-	return cnvgl_rendering_culling.Constructor;
-
-}());
+}(cnvgl));
 
