@@ -23,6 +23,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 	
 	cnvgl.vertex = function(i) {
+
+		this.processed = false;
 		
 		this.x = 0;
 		this.y = 0;
