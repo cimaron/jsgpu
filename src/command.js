@@ -19,26 +19,55 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-function GpuQueue() {
+function GpuCommandBuffer() {
 	this.data = [];
-	this.count = 0;
+	this.data.length = 4096;
+
+	this.read = 0;
+	this.write = 0;
 }
 
-var proto = GpuQueue.prototype;
+var proto = GpuCommandBuffer.prototype;
 
+/**
+ * Add an item to the command buffer
+ *
+ * @param   object
+ */
 proto.enqueue = function(item) {
-	this.data.push(item);
+
+	this.data[this.write] = item;
+
+	this.write++;
+	this.write %= this.data.length;
 };
 
+/**
+ * Get an item from the command buffer, updating internal pointer
+ *
+ * @return  object
+ */
 proto.dequeue = function() {
+	var item;
 
-	this.count++;
+	if (this.read === this.write) {
+		return null;	
+	}
 
-	return this.data.shift();
+	item = this.data[this.read];
+
+	this.read++;
+	this.read %= this.data.length;
+
+	return item;
 };
 
+/**
+ * Reset command buffer
+ */
 proto.reset = function() {
-	this.data = [];
+	this.read = 0;
+	this.write = 0;
 };
 
 proto.process = function() {
@@ -46,8 +75,8 @@ proto.process = function() {
 
 	time = Frame.getTimeLeft(true);
 
-	while (Frame.getTimeLeft() > 0 && DrawQueue.data.length > 0) {
-		item = DrawQueue.dequeue();
+	while (Frame.getTimeLeft() > 0 && (CommandBuffer.read !== CommandBuffer.write)) {
+		item = CommandBuffer.dequeue();
 		item.func.apply(GPU, item.args);
 	}
 
@@ -69,17 +98,17 @@ proto.schedule = function() {
 	}	
 };
 
-var DrawQueue = new GpuQueue();
+var CommandBuffer = new GpuCommandBuffer();
 
 /**
  * GPU Api
  */
-GPU.draw = function(cmd, args) {
-	DrawQueue.enqueue({func : cmd, args : args});
+GPU.command = function(cmd, args) {
+	CommandBuffer.enqueue({func : cmd, args : args});
 };
 
 GPU.empty = function() {
-	DrawQueue.reset();
+	CommandBuffer.reset();
 };
 
 

@@ -104,7 +104,7 @@ GPU.onFrame = function(func) {
 
 GPU.run = function() {
 	Frame.running = true;
-	DrawQueue.schedule();
+	CommandBuffer.schedule();
 };
 
 GPU.pause = function() {
