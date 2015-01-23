@@ -20,15 +20,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-var GPU = {};
+(function(GPU) {
 
-include('drivers/cnvGL/gpu/context.js');
-include('drivers/cnvGL/gpu/memory.js');
-include('drivers/cnvGL/gpu/queue.js');
-include('drivers/cnvGL/gpu/execute.js');
-include('drivers/cnvGL/gpu/shader.js');
-include('drivers/cnvGL/gpu/texture.js');
+	GPU.memory = {};
 
+	GPU.memory.temp = null;
+	GPU.memory.uniforms = null;
+	GPU.memory.attributes = null;
+	GPU.memory.cur_attributes = null;
+	GPU.memory.varying = null;
+	GPU.memory.result = null;
 
-include('drivers/cnvGL/gpu/rendering/renderer.js');
+}(GPU));
 

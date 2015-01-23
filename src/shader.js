@@ -19,16 +19,41 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+(function(GPU) {
+	var shader, result, vertex, temp, program, memory;
+	var tex;
 
-var GPU = {};
+	shader = {
+		MAX_UNIFORMS : 128,
+		MAX_FRAGMENT_UNIFORM_COMPONENTS : 128,
+		MAX_VERTEX_ATTRIBS : 16,
+		MAX_VARYING_VECTORS : 12,
+		MAX_TEMPORARIES : 12
+	};
+	
+	GPU.executeVertex = function(){};
+	GPU.executeFragment = function(){};
 
-include('drivers/cnvGL/gpu/context.js');
-include('drivers/cnvGL/gpu/memory.js');
-include('drivers/cnvGL/gpu/queue.js');
-include('drivers/cnvGL/gpu/execute.js');
-include('drivers/cnvGL/gpu/shader.js');
-include('drivers/cnvGL/gpu/texture.js');
+	GPU.memory.attributes_src = cnvgl.malloc(shader.MAX_VERTEX_ATTRIBS, 1);
 
+	GPU.uploadShaders = function(state, prgm) {
 
-include('drivers/cnvGL/gpu/rendering/renderer.js');
+		state.prgm = prgm;
+
+		this.executeVertex = prgm.vertex;
+		this.executeFragment = prgm.fragment;
+
+		GPU.memory.uniforms = prgm.context.uniform_f32;
+		GPU.memory.attributes = prgm.context.attribute_f32;
+		GPU.memory.varying = prgm.context.varying_f32;
+		GPU.memory.result = prgm.context.result_f32;		
+	};
+
+	GPU.shader = shader;
+
+	//
+	var tex;
+	shader.setTexFunc = function(f) { tex = f; };
+
+}(GPU));
 

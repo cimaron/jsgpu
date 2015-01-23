@@ -20,15 +20,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-var GPU = {};
-
-include('drivers/cnvGL/gpu/context.js');
-include('drivers/cnvGL/gpu/memory.js');
-include('drivers/cnvGL/gpu/queue.js');
-include('drivers/cnvGL/gpu/execute.js');
-include('drivers/cnvGL/gpu/shader.js');
-include('drivers/cnvGL/gpu/texture.js');
+(function(cnvgl) {
 
 
-include('drivers/cnvGL/gpu/rendering/renderer.js');
+	cnvgl.fragment = function() {
+		this.attrib = null;
+		this.result = null;
+		this.color = new Float32Array(4);
+	};
+
+
+}(cnvgl));
 

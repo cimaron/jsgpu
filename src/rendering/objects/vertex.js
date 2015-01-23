@@ -19,16 +19,37 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+(function(cnvgl) {
 
-var GPU = {};
+	
+	cnvgl.vertex = function(i) {
 
-include('drivers/cnvGL/gpu/context.js');
-include('drivers/cnvGL/gpu/memory.js');
-include('drivers/cnvGL/gpu/queue.js');
-include('drivers/cnvGL/gpu/execute.js');
-include('drivers/cnvGL/gpu/shader.js');
-include('drivers/cnvGL/gpu/texture.js');
+		this.processed = false;
+		
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+		this.w = 0;
+		
+		this.xd = 0;
+		this.yd = 0;
+		this.zd = 0;
+	
+		this.xw = 0;
+		this.yw = 0;
+		this.zw = 0;
+		
+		this.xc = 0;
+		this.yc = 0;
+		this.zc = 0;
+		
+		this.i = i;
+
+		//allocate memory
+		this.varying = null;
+		this.result = null;
+	};
 
 
-include('drivers/cnvGL/gpu/rendering/renderer.js');
+}(cnvgl));
 

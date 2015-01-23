@@ -20,15 +20,51 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-var GPU = {};
-
-include('drivers/cnvGL/gpu/context.js');
-include('drivers/cnvGL/gpu/memory.js');
-include('drivers/cnvGL/gpu/queue.js');
-include('drivers/cnvGL/gpu/execute.js');
-include('drivers/cnvGL/gpu/shader.js');
-include('drivers/cnvGL/gpu/texture.js');
+(function(cnvgl) {
 
 
-include('drivers/cnvGL/gpu/rendering/renderer.js');
+	cnvgl.primitive = (function() {
+				
+		function Initializer() {
+			//public:
+			this.mode = null;
+			this.vertices = [];
+			this.sorted = false;
+			this.direction = null;
+		}
+	
+		var cnvgl_primitive = jClass('cnvgl_primitive', Initializer);
+	
+		//public:
+	
+		cnvgl_primitive.cnvgl_primitive = function() {
+		};
+	
+	
+		cnvgl_primitive.getDirection = function() {
+			var a, E, i, th, n;
+	
+			if (this.direction) {
+				return this.direction;	
+			}
+	
+			n = this.vertices.length;
+			E = 0;
+			for (i = 0; i < n; i++) {
+				th = (i + 1) % n;
+				E += (this.vertices[i].xw * this.vertices[th].yw - this.vertices[th].xw * this.vertices[i].yw);
+			}
+			E = E > 0 ? 1 : -1;
+			
+			this.direction = E;
+	
+			return this.direction;
+		};
+	
+		return cnvgl_primitive.Constructor;
+	
+	}());
+
+
+}(cnvgl));
 
