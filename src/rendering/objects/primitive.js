@@ -19,52 +19,38 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * Primitive Object Class
+ */
+function Primitive() {
+	this.mode = null;
+	this.vertices = [];
+	this.sorted = false;
+	this.direction = null;
+}
 
-(function(cnvgl) {
+proto = Primitive.prototype;
 
+/**
+ * Get direction
+ */
+proto.getDirection = function() {
+	var a, E, i, th, n;
 
-	cnvgl.primitive = (function() {
-				
-		function Initializer() {
-			//public:
-			this.mode = null;
-			this.vertices = [];
-			this.sorted = false;
-			this.direction = null;
-		}
-	
-		var cnvgl_primitive = jClass('cnvgl_primitive', Initializer);
-	
-		//public:
-	
-		cnvgl_primitive.cnvgl_primitive = function() {
-		};
-	
-	
-		cnvgl_primitive.getDirection = function() {
-			var a, E, i, th, n;
-	
-			if (this.direction) {
-				return this.direction;	
-			}
-	
-			n = this.vertices.length;
-			E = 0;
-			for (i = 0; i < n; i++) {
-				th = (i + 1) % n;
-				E += (this.vertices[i].xw * this.vertices[th].yw - this.vertices[th].xw * this.vertices[i].yw);
-			}
-			E = E > 0 ? 1 : -1;
-			
-			this.direction = E;
-	
-			return this.direction;
-		};
-	
-		return cnvgl_primitive.Constructor;
-	
-	}());
+	if (this.direction) {
+		return this.direction;	
+	}
 
+	n = this.vertices.length;
+	E = 0;
+	for (i = 0; i < n; i++) {
+		th = (i + 1) % n;
+		E += (this.vertices[i].xw * this.vertices[th].yw - this.vertices[th].xw * this.vertices[i].yw);
+	}
+	E = E > 0 ? 1 : -1;
+	
+	this.direction = E;
 
-}(cnvgl));
+	return this.direction;
+};
 

@@ -19,160 +19,162 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-cnvgl_rendering_primitive_triangle = (function() {
+/**
+ * Triangle Rendering Class
+ */
+function cnvgl_rendering_primitive_triangle(renderer) {
 
-	//Internal Constructor
-	function Initializer() {
-		//public:
-		this.renderer = null;
+	this.renderer = renderer;
+	this.frag = new Fragment();
 
-		this.prim = null;
-		this.frag = null;
-		this.v1 = null;
-		this.v2 = null;
-		this.v3 = null;
+	this.prim = null;
+	this.v1 = null;
+	this.v2 = null;
+	this.v3 = null;
+}
+
+proto = cnvgl_rendering_primitive_triangle.prototype;
+
+/**
+ * Render triangle
+ */
+proto.render = function(state, prim) {
+	var clipped, num, i;
+
+	if (this.renderer.culling.checkCull(state, prim)) {
+		return;
+	}
+	
+	//clipping may split triangle into multiple triangles
+	clipped = [];
+	num = this.renderer.clipping.clipTriangle(state, prim, clipped);
+
+	for (i = 0; i < num; i++) {
+		this.renderClipped(state, clipped[i]);
+	}
+};
+
+/**
+ * Render clipped triangle
+ */
+proto.renderClipped = function(state, prim) {
+	var dir, t;
+
+	this.prim = prim;
+
+	//prepare (sort) vertices
+	this.renderer.vertex.sortVertices(prim);
+	dir = prim.getDirection();
+
+	if (dir >= 0) {
+		t = prim.vertices[2];
+		prim.vertices[2] = prim.vertices[1];
+		prim.vertices[1] = t;
 	}
 
-	var cnvgl_rendering_primitive_triangle = jClass('cnvgl_rendering_primitive_triangle', Initializer);
+	this.rasterize(state, prim);
+};
 
-	//public:
+/**
+ * Rasterize triangle
+ */
+proto.rasterize = function(state, prim) {
+	var v1, v2, v3, dx1, dx2, dx3, yi_start, yi_end, yi, x_start, x_end, vpass;
 
-	cnvgl_rendering_primitive_triangle.cnvgl_rendering_primitive_triangle = function(renderer) {
-		this.renderer = renderer;
-		this.frag = new cnvgl.fragment();
-	};
+	v1 = this.v1 = prim.vertices[0];
+	v2 = this.v2 = prim.vertices[1];
+	v3 = this.v3 = prim.vertices[2];
 
-	cnvgl_rendering_primitive_triangle.render = function(state, prim) {
-		var clipped, num, i;
+	this.renderer.interpolate.setVertices(this.v1, this.v2, this.v3);
 
-		if (this.renderer.culling.checkCull(state, prim)) {
-			return;
-		}
-		
-		//clipping may split triangle into multiple triangles
-		clipped = [];
-		num = this.renderer.clipping.clipTriangle(state, prim, clipped);
- 
-		for (i = 0; i < num; i++) {
-			this.renderClipped(state, clipped[i]);
-		}
-	};
+	dx1 = this.renderer.vertex.slope(v1.xw, v1.yw, v2.xw, v2.yw);
+	dx2 = this.renderer.vertex.slope(v1.xw, v1.yw, v3.xw, v3.yw);
+	dx3 = this.renderer.vertex.slope(v2.xw, v2.yw, v3.xw, v3.yw);
 
-	cnvgl_rendering_primitive_triangle.renderClipped = function(state, prim) {
-		var dir, t;
+	//top and bottom bounds
+	yi_start = (v1.yw|0) + .5; //floor(v1.yw) + .5
+	if (yi_start < v1.yw) {
+		yi_start++;
+	}
+	yi = v3.yw > v2.yw ? v3.yw : v2.yw;
+	yi_end = yi + 1;
+	if (yi_end >= yi) {
+		yi_end--;
+	}
 
-		this.prim = prim;
+	x_start = v1.xw + (yi_start - v1.yw) * dx1;
+	x_end = v1.xw + (yi_start - v1.yw) * dx2;
+	vpass = false;
 
-		//prepare (sort) vertices
-		this.renderer.vertex.sortVertices(prim);
-		dir = prim.getDirection();
+	//for each horizontal scanline
+	for (yi = yi_start; yi < yi_end; yi++) {
 
-		if (dir >= 0) {
-			t = prim.vertices[2];
-			prim.vertices[2] = prim.vertices[1];
-			prim.vertices[1] = t;
-		}
-
-		this.rasterize(state, prim);
-	};
-
-	cnvgl_rendering_primitive_triangle.rasterize = function(state, prim) {
-		var v1, v2, v3, dx1, dx2, dx3, yi_start, yi_end, yi, x_start, x_end, vpass;
-
-		v1 = this.v1 = prim.vertices[0];
-		v2 = this.v2 = prim.vertices[1];
-		v3 = this.v3 = prim.vertices[2];
-
-		this.renderer.interpolate.setVertices(this.v1, this.v2, this.v3);
-
-		dx1 = this.renderer.vertex.slope(v1.xw, v1.yw, v2.xw, v2.yw);
-		dx2 = this.renderer.vertex.slope(v1.xw, v1.yw, v3.xw, v3.yw);
-		dx3 = this.renderer.vertex.slope(v2.xw, v2.yw, v3.xw, v3.yw);
-
-		//top and bottom bounds
-		yi_start = (v1.yw|0) + .5; //floor(v1.yw) + .5
-		if (yi_start < v1.yw) {
-			yi_start++;
-		}
-		yi = v3.yw > v2.yw ? v3.yw : v2.yw;
-		yi_end = yi + 1;
-		if (yi_end >= yi) {
-			yi_end--;
+		//next vertex (v1, v2) -> (v2, v3)
+		if (!vpass && yi > v2.yw) {
+			x_start = v3.xw + (yi - v3.yw) * dx3;
+			dx1 = dx3;
+			vpass = true;
 		}
 
-		x_start = v1.xw + (yi_start - v1.yw) * dx1;
-		x_end = v1.xw + (yi_start - v1.yw) * dx2;
-		vpass = false;
+		//next vertex (v1, v3) -> (v2, v3)
+		if (!vpass && yi > v3.yw) {
+			x_end = v3.xw + (yi - v3.yw) * dx3;
+			dx2 = dx3;
+			vpass = true;
+		}
 
-		//for each horizontal scanline
-		for (yi = yi_start; yi < yi_end; yi++) {
+		this.rasterizeScanline(state, yi, x_start, x_end);
 
-			//next vertex (v1, v2) -> (v2, v3)
-			if (!vpass && yi > v2.yw) {
-				x_start = v3.xw + (yi - v3.yw) * dx3;
-				dx1 = dx3;
-				vpass = true;
+		x_start += dx1;
+		x_end += dx2;
+	}
+};
+
+/**
+ * Rasterize single scanline of triangle
+ */
+proto.rasterizeScanline = function(state, yi, x_start, x_end) {
+	var int, xi_start, xi_end, xi, i, v;
+
+	int = this.renderer.interpolate;
+
+	//left and right bounds
+	xi_start = (x_start|0) + .5; //floor(x_start) + .5
+	if (xi_start < x_start) {
+		xi_start++;	
+	}
+	xi_end = /*ceil*/((x_end + 1-1e-10)|0) - .5;
+	if (xi_end >= x_end) {
+		xi_end--;
+	}
+
+	i = state.viewportW * (yi - .5) + (xi_start - .5);
+
+	for (xi = xi_start; xi <= xi_end; xi++) {
+
+		int.setPoint(xi, yi);
+
+		//Early depth test
+		//Need to add check for shader writing to depth value.
+		//If so, this needs to run after processing the fragment
+		if (state.depthTest) {
+			this.frag.gl_FragDepth = int.interpolateTriangle(this.v1.zw, this.v2.zw, this.v3.zw);
+			if (!this.renderer.checkDepth(state, i, this.frag.gl_FragDepth)) {
+				i++;
+				continue;
 			}
-
-			//next vertex (v1, v3) -> (v2, v3)
-			if (!vpass && yi > v3.yw) {
-				x_end = v3.xw + (yi - v3.yw) * dx3;
-				dx2 = dx3;
-				vpass = true;
-			}
-
-			this.rasterizeScanline(state, yi, x_start, x_end);
-
-			x_start += dx1;
-			x_end += dx2;
-		}
-	};
-
-	cnvgl_rendering_primitive_triangle.rasterizeScanline = function(state, yi, x_start, x_end) {
-		var int, xi_start, xi_end, xi, i, v;
-
-		int = this.renderer.interpolate;
-
-		//left and right bounds
-		xi_start = (x_start|0) + .5; //floor(x_start) + .5
-		if (xi_start < x_start) {
-			xi_start++;	
-		}
-		xi_end = /*ceil*/((x_end + 1-1e-10)|0) - .5;
-		if (xi_end >= x_end) {
-			xi_end--;
 		}
 
-		i = state.viewportW * (yi - .5) + (xi_start - .5);
+		if (!this.frag.attrib) {
+			this.frag.attrib = new Float32Array(this.v1.varying);
+			this.frag.result = new Float32Array(this.v1.result);				
+		}
+		int.interpolateVarying(state, this.v1, this.v2, this.v3, this.frag.attrib);
 
-		for (xi = xi_start; xi <= xi_end; xi++) {
+		this.renderer.fragment.process(state, this.frag);
+		this.renderer.fragment.write(state, i, this.frag);
 
-			int.setPoint(xi, yi);
-
-			//Early depth test
-			//Need to add check for shader writing to depth value.
-			//If so, this needs to run after processing the fragment
-			if (state.depthTest) {
-				this.frag.gl_FragDepth = int.interpolateTriangle(this.v1.zw, this.v2.zw, this.v3.zw);
-				if (!this.renderer.checkDepth(state, i, this.frag.gl_FragDepth)) {
-					i++;
-					continue;
-				}
-			}
-
-			if (!this.frag.attrib) {
-				this.frag.attrib = new Float32Array(this.v1.varying);
-				this.frag.result = new Float32Array(this.v1.result);				
-			}
-			int.interpolateVarying(state, this.v1, this.v2, this.v3, this.frag.attrib);
-
-			this.renderer.fragment.process(state, this.frag);
-			this.renderer.fragment.write(state, i, this.frag);
-
-			i++;
-		}		
-	};
-
-	return cnvgl_rendering_primitive_triangle.Constructor;
-}());
+		i++;
+	}		
+};
 

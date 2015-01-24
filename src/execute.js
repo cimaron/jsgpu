@@ -19,162 +19,165 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+function Execute(cmd) {
 
-(function(GPU) {
+	if (GPU.commands[cmd[1]]) {
+		return GPU.commands[cmd[1]].apply(GPU, cmd);
+	} else {
+		//console.log(cmd);
+	}
+}
 
-	GPU.execute = function(cmd) {
-		if (GPU.commands[cmd[1]]) {
-			return GPU.commands[cmd[1]].apply(GPU, cmd);
+GPU.execute = Execute;
+
+GPU.commands = {};
+
+GPU.commands.set = function(ctx, cmd, name, value) {
+	ctx[name] = value;
+	return true;
+};
+
+GPU.commands.setArray = function(ctx, cmd, name, index, value) {
+	ctx[name][index] = value;
+	return true;
+};
+
+GPU.commands.clear = function(ctx, cmd, mask) {
+	if (mask && cnvgl.COLOR_BUFFER_BIT) {
+		cnvgl.memseta(ctx.colorBuffer, 0, ctx.clearColor, ctx.colorBuffer.size);
+	}
+	if (mask && cnvgl.DEPTH_BUFFER_BIT) {
+		cnvgl.memset(ctx.depthBuffer, 0, ctx.clearDepth);
+	}
+	if (mask && cnvgl.STENCIL_BUFFER_BIT) {
+		cnvgl.memset(ctx.stencilBuffer, 0, ctx.clearStencil);
+	}
+	return true;
+};
+
+var cache = {
+	i : -1,
+	data : []
+};
+
+
+GPU.commands.drawPrimitives = function(ctx, cmd, mode, first, count) {
+	var start, now, vertex;
+	
+	start = Date.now();
+	if (cache.i == -1) {
+		cache.i = first;
+	}
+	for (; cache.i < count; cache.i++) {
+		vertex = new Vertex(cache.i);
+		GPU.renderer.send(ctx, mode, vertex);
+
+		now = Date.now();
+		if (now - start > 200) {
+			//time limit is up
+			cache.i++;
+			return false;
+		}
+	}
+	GPU.renderer.end(ctx, mode);
+	cache.i = -1;
+	return true;
+};
+
+
+GPU.commands.drawIndexedPrimitives = function(ctx, cmd, mode, indices, first, count, type) {
+	var start, now, idx;
+	
+	start = Date.now();
+	if (cache.i == -1) {
+		cache.data = [];
+		cache.i = first;
+	}
+
+	for (; cache.i < count; cache.i++) {
+		
+		idx = indices[first + cache.i];
+
+		if (cache.data[idx]) {
+			vertex = cache.data[idx];
 		} else {
-			//console.log(cmd);
-		}
-	};
-
-	GPU.commands = {};
-
-	GPU.commands.set = function(ctx, cmd, name, value) {
-		ctx[name] = value;
-		return true;
-	};
-
-	GPU.commands.setArray = function(ctx, cmd, name, index, value) {
-		ctx[name][index] = value;
-		return true;
-	};
-
-	GPU.commands.clear = function(ctx, cmd, mask) {
-		if (mask && cnvgl.COLOR_BUFFER_BIT) {
-			cnvgl.memseta(ctx.colorBuffer, 0, ctx.clearColor, ctx.colorBuffer.size);
-		}
-		if (mask && cnvgl.DEPTH_BUFFER_BIT) {
-			cnvgl.memset(ctx.depthBuffer, 0, ctx.clearDepth);
-		}
-		if (mask && cnvgl.STENCIL_BUFFER_BIT) {
-			cnvgl.memset(ctx.stencilBuffer, 0, ctx.clearStencil);
-		}
-		return true;
-	};
-
-	var i = -1;
-	GPU.commands.drawPrimitives = function(ctx, cmd, mode, first, count) {
-		var start, now;
-		
-		start = Date.now();
-		if (i == -1) {
-			i = first;
+			vertex = new Vertex(idx);
+			cache.data[idx] = vertex;
 		}
 
-		for (; i < count; i++) {
-			vertex = new cnvgl.vertex(i);
-			GPU.renderer.send(ctx, mode, vertex);
+		GPU.renderer.send(ctx, mode, vertex);
 
-			now = Date.now();
-			if (now - start > 200) {
-				//time limit is up
-				i++;
-				return false;
-			}
+		now = Date.now();
+		if (now - start > 200) {
+			//time limit is up
+			cache.i++;
+			return false;
 		}
-		GPU.renderer.end(ctx, mode);
-		i = -1;
-		return true;
+	}
+
+	GPU.renderer.end(ctx, mode);
+	cache.i = -1;
+	return true;
+};
+	
+GPU.commands.uploadProgram = function(ctx, cmd, data) {
+	GPU.uploadShaders(ctx, data);
+	return true;
+};
+
+GPU.commands.uploadAttributes = function(ctx, cmd, location, size, stride, si, data) {
+	var ds, i, c, dest;
+
+	ds = Math.ceil((data.length - si) / (size + stride)) * 4;
+	dest = cnvgl.malloc(ds, 1);
+
+	GPU.memory.attributes_src[location] = {
+		start : location * 4,
+		size : size,
+		stride : stride,
+		si : si,
+		data : dest
 	};
+	
+	c = 0;
+	for (i = 0; i < ds; i++) {
 
-	var cache;
-	GPU.commands.drawIndexedPrimitives = function(ctx, cmd, mode, indices, first, count, type) {
-		var start, now, idx;
-		
-		start = Date.now();
-		if (i == -1) {
-			cache = [];
-			i = first;
-		}
-
-		for (; i < count; i++) {
-			
-			idx = indices[first + i];
-
-			if (cache[idx]) {
-				vertex = cache[idx];
-			} else {
-				vertex = new cnvgl.vertex(idx);
-				cache[idx] = vertex;
-			}
-
-			GPU.renderer.send(ctx, mode, vertex);
-
-			now = Date.now();
-			if (now - start > 200) {
-				//time limit is up
-				i++;
-				return false;
-			}
+		if (c < size) {
+			dest[i] = data[si];
+			si++;
+		} else {
+			dest[i] = (c == 3) ? 1 : 0;
 		}
 
-		GPU.renderer.end(ctx, mode);
-		i = -1;
-		return true;
-	};
-		
-	GPU.commands.uploadProgram = function(ctx, cmd, data) {
-		GPU.uploadShaders(ctx, data);
-		return true;
-	};
-
-	GPU.commands.uploadAttributes = function(ctx, cmd, location, size, stride, si, data) {
-		var ds, i, c, dest;
-
-		ds = Math.ceil((data.length - si) / (size + stride)) * 4;
-		dest = cnvgl.malloc(ds, 1);
-
-		GPU.memory.attributes_src[location] = {
-			start : location * 4,
-			size : size,
-			stride : stride,
-			si : si,
-			data : dest
-		};
-		
-		c = 0;
-		for (i = 0; i < ds; i++) {
-
-			if (c < size) {
-				dest[i] = data[si];
-				si++;
-			} else {
-				dest[i] = (c == 3) ? 1 : 0;
-			}
-
-			c++;
-			if (c == 4) {
-				si += stride;
-				c = 0;
-			}
+		c++;
+		if (c == 4) {
+			si += stride;
+			c = 0;
 		}
-		return true;
-	};
+	}
+	return true;
+};
 
-	GPU.commands.uploadTexture = function(ctx, cmd, unit, texture_obj) {
-		GPU.texture.upload(unit, texture_obj);
-		return true;
-	};
+GPU.commands.uploadTexture = function(ctx, cmd, unit, texture_obj) {
+	GPU.texture.upload(unit, texture_obj);
+	return true;
+};
 
-	GPU.commands.uploadUniforms = function(ctx, cmd, location, data, slots, components) {
-		var i, j, mem, row, s;
+GPU.commands.uploadUniforms = function(ctx, cmd, location, data, slots, components) {
+	var i, j, mem, row, s;
 
-		mem = GPU.memory.uniforms;
-		row = 4 * location;
-		s = 0;
+	mem = GPU.memory.uniforms;
+	row = 4 * location;
+	s = 0;
 
-		for (i = 0; i < slots; i++) {
-			for (j = 0; j < components; j++) {
-				mem[row + j] = data[s++];
-			}
-			row += 4;
+	for (i = 0; i < slots; i++) {
+		for (j = 0; j < components; j++) {
+			mem[row + j] = data[s++];
 		}
+		row += 4;
+	}
 
-		return true;
-	};
+	return true;
+};
 
-}(GPU));
 

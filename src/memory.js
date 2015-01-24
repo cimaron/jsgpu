@@ -20,16 +20,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-(function(GPU) {
+GPU.memory = {};
 
-	GPU.memory = {};
+GPU.memory.temp = null;
+GPU.memory.uniforms = null;
+GPU.memory.attributes = null;
+GPU.memory.cur_attributes = null;
+GPU.memory.varying = null;
+GPU.memory.result = null;
 
-	GPU.memory.temp = null;
-	GPU.memory.uniforms = null;
-	GPU.memory.attributes = null;
-	GPU.memory.cur_attributes = null;
-	GPU.memory.varying = null;
-	GPU.memory.result = null;
-
-}(GPU));
 

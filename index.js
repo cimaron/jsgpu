@@ -21,9 +21,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 (function() {
 
-	GPU = {};
+	var proto;
+
+	var GPU = {};
 
 	//= require build/gpu.part.js
+
+	GPU.initialize();
 
 	this.GPU = GPU;
 

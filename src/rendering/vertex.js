@@ -19,112 +19,115 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-cnvgl_rendering_vertex = (function() {
+/**
+ * Vertex Rendering Class
+ */
+function cnvgl_rendering_vertex(renderer) {
+	this.renderer = renderer;
+}
 
-	//Internal Constructor
-	function Initializer() {
-		//public:
-		this.renderer = null;
+proto = cnvgl_rendering_vertex.prototype;
+
+/**
+ * Load vertex attributes into shader memory
+ */
+proto.loadAttributes = function(state, n) {
+	var src, attr, i, j;
+	
+	src = GPU.memory.attributes_src;
+
+	for (i = 0; i < src.length; i++) {
+
+		attr = src[i];
+		
+		if (!attr) {
+			break;
+		}
+
+		for (j = 0; j < attr.size; j++) {
+			GPU.memory.attributes[attr.start + j] = attr.data[n * 4 + j];
+		}
+	}
+	
+};
+
+/**
+ * Process vertex
+ */
+proto.process = function(state, v) {
+
+	this.loadAttributes(state, v.i);
+
+	GPU.executeVertex();
+
+	v.varying = new Float32Array(GPU.memory.varying);
+	v.result = new Float32Array(GPU.memory.result);
+
+	v.x = v.result[0];
+	v.y = v.result[1];
+	v.z = v.result[2];
+	v.w = v.result[3];
+
+	//set normalized coordinates
+	if (v.w) {
+		v.xd = v.x / v.w;
+		v.yd = v.y / v.w;
+		v.zd = v.z / v.w;
+
+		//set window coordinates
+		v.xw = state.viewportX + (state.viewportW / 2) * (1 + v.xd);
+		v.yw = state.viewportY + (state.viewportH / 2) * (1 - v.yd);
+		v.zw = (((state.viewportF - state.viewportN) * v.zd) + state.viewportN + state.viewportF) / 2;
+	}
+};
+
+/**
+ * Sort vertices
+ */
+proto.sortVertices = function(prim) {
+
+	if (prim.sorted) {
+		return;
 	}
 
-	var cnvgl_rendering_vertex = jClass('cnvgl_rendering_vertex', Initializer);
+	var ymin = 99999, yminx = 9999, yi, i, vs, vertices= [];
+	vs = prim.vertices;
 
-	//public:
-	cnvgl_rendering_vertex.cnvgl_rendering_vertex = function(renderer) {
-		this.renderer = renderer;
-	};
+	//nothing to sort
+	if (vs.length < 2) {
+		return;
+	}
 
-	cnvgl_rendering_vertex.loadAttributes = function(state, n) {
-		var src, attr, i, j;
-		
-		src = GPU.memory.attributes_src;
-
-		for (i = 0; i < src.length; i++) {
-
-			attr = src[i];
-			
-			if (!attr) {
-				break;
-			}
-
-			for (j = 0; j < attr.size; j++) {
-				GPU.memory.attributes[attr.start + j] = attr.data[n * 4 + j];
-			}
+	//find top vertex
+	for (i = 0; i < vs.length; i++) {
+		if (vs[i].yw < ymin || (vs[i].yw == ymin && vs[i].xw < yminx)) {
+			ymin = vs[i].yw;
+			yminx = vs[i].xw;
+			yi = i;
 		}
-		
-	};
+	}
 
-	cnvgl_rendering_vertex.process = function(state, v) {
-
-		this.loadAttributes(state, v.i);
-
-		GPU.executeVertex();
-
-		v.varying = new Float32Array(GPU.memory.varying);
-		v.result = new Float32Array(GPU.memory.result);
-
-		v.x = v.result[0];
-		v.y = v.result[1];
-		v.z = v.result[2];
-		v.w = v.result[3];
-
-		//set normalized coordinates
-		if (v.w) {
-			v.xd = v.x / v.w;
-			v.yd = v.y / v.w;
-			v.zd = v.z / v.w;
-
-			//set window coordinates
-			v.xw = state.viewportX + (state.viewportW / 2) * (1 + v.xd);
-			v.yw = state.viewportY + (state.viewportH / 2) * (1 - v.yd);
-			v.zw = (((state.viewportF - state.viewportN) * v.zd) + state.viewportN + state.viewportF) / 2;
+	//reorder vertices
+	for (i = 0; i < vs.length; i++) {
+		vertices[i] = vs[yi];
+		yi++;
+		if (yi >= vs.length) {
+			yi = 0;
 		}
-	};
+	}
 
-	cnvgl_rendering_vertex.sortVertices = function(prim) {
+	prim.vertices = vertices;
+	prim.sorted = true;
+};
 
-		if (prim.sorted) {
-			return;
-		}
+/**
+ * Get slope
+ */
+proto.slope = function(x1, y1, x2, y2) {
+	x1 = x2 - x1;
+	y1 = y2 - y1;
+	//divide by zero should return Nan
+	return (x1 / y1);
+};
 
-		var ymin = 99999, yminx = 9999, yi, i, vs, vertices= [];
-		vs = prim.vertices;
-
-		//nothing to sort
-		if (vs.length < 2) {
-			return;
-		}
-
-		//find top vertex
-		for (i = 0; i < vs.length; i++) {
-			if (vs[i].yw < ymin || (vs[i].yw == ymin && vs[i].xw < yminx)) {
-				ymin = vs[i].yw;
-				yminx = vs[i].xw;
-				yi = i;
-			}
-		}
-
-		//reorder vertices
-		for (i = 0; i < vs.length; i++) {
-			vertices[i] = vs[yi];
-			yi++;
-			if (yi >= vs.length) {
-				yi = 0;
-			}
-		}
-
-		prim.vertices = vertices;
-		prim.sorted = true;
-	};
-
-	cnvgl_rendering_vertex.slope = function(x1, y1, x2, y2) {
-		x1 = x2 - x1;
-		y1 = y2 - y1;
-		//divide by zero should return Nan
-		return (x1 / y1);
-	};
-
-	return cnvgl_rendering_vertex.Constructor;
-
-}());
 

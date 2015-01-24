@@ -19,59 +19,57 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-cnvgl_rendering_primitive_point = (function() {
+/**
+ * Point Renderer Class
+ */
+function cnvgl_rendering_primitive_point(renderer) {
 
-	//Internal Constructor
-	function Initializer() {
-		//public:
-		this.renderer = null;
+	this.renderer = renderer;
+	this.frag = new Fragment();
 
-		this.prim = null;
+	this.prim = null;
+}
+
+proto = cnvgl_rendering_primitive_point.prototype;
+
+/**
+ * Render point
+ */
+proto.render = function(state, prim) {
+	var num;
+
+	num = this.renderer.clipping.clipPoint(prim);
+
+	if (num) {
+		this.renderClipped(state, prim);
 	}
 
-	var cnvgl_rendering_primitive_point = jClass('cnvgl_rendering_primitive_point', Initializer);
+};
 
-	//public:
+/**
+ * Render clipped point
+ */
+proto.renderClipped = function(state, prim) {
+	var vw, v, x, y, i;
 
-	cnvgl_rendering_primitive_point.cnvgl_rendering_primitive_point = function(renderer) {
-		this.renderer = renderer;
-		this.frag = new cnvgl.fragment();
-	};
+	this.prim = prim;
 
-	cnvgl_rendering_primitive_point.render = function(state, prim) {
-		var num;
+	v = prim.vertices[0];
+	x = Math.round(v.xw);
+	y = Math.round(v.yw);
 
-		num = this.renderer.clipping.clipPoint(prim);
+	vw = state.viewportW;
 
-		if (num) {
-			this.renderClipped(state, prim);
-		}
+	/*
+	for (i in v.varying) {
+		this.frag.varying[i] = v.varying[i];
+	}
+	*/
 
-	};
+	i = (vw * y + x);
 
-	cnvgl_rendering_primitive_point.renderClipped = function(state, prim) {
-		var vw, v, x, y, i;
+	this.renderer.fragment.process(state, this.frag);
+	this.renderer.fragment.write(state, i, this.frag);
+};
 
-		this.prim = prim;
-
-		v = prim.vertices[0];
-		x = Math.round(v.xw);
-		y = Math.round(v.yw);
-
-		vw = state.viewportW;
-
-		/*
-		for (i in v.varying) {
-			this.frag.varying[i] = v.varying[i];
-		}
-		*/
-
-		i = (vw * y + x);
-
-		this.renderer.fragment.process(state, this.frag);
-		this.renderer.fragment.write(state, i, this.frag);
-	};
-
-	return cnvgl_rendering_primitive_point.Constructor;
-}());
 

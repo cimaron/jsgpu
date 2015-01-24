@@ -20,68 +20,63 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-(function(GPU) {
+function CommandQueue(driver) {
+	this.commands = [];
+	this.timer = null;
+	this.driver = driver;
+}
 
-	GPU.CommandQueue = (function() {
+proto = CommandQueue.prototype;
 
-		function Initializer() {
-			this.commands = [];
-			this.timer = null;
-			this.driver = null;
+/**
+ * Enqueue a command
+ */
+proto.enqueue = function(cmd) {
+	this.commands.push(cmd);
+	this.schedule();
+};
+
+
+proto.process = function() {
+	var command, start, now, result;
+
+	this.timer = null;
+	start = Date.now();
+
+	while (this.commands.length > 0) {
+
+		command = this.commands.shift();
+		result = GPU.execute(command);
+		
+		if (!result) {
+			this.commands.unshift(command);
+			this.schedule();
+			return;
 		}
 
-		var CommandQueue = jClass('CommandQueue', Initializer);
-		
-		//public:
+		now = Date.now();
 
-		CommandQueue.CommandQueue = function(driver) {
-			this.driver = driver;
-		};
-
-		CommandQueue.enqueue = function(cmd) {
-			this.commands.push(cmd);
+		if (this.commands.length > 0 && now - start > 200) {
 			this.schedule();
-		};
+			return;
+		}
+	}
 
-		CommandQueue.process = function() {
-			var command, start, now, result;
+	this.driver.present();
+};
 
-			this.timer = null;
-			start = Date.now();
-	
-			while (this.commands.length > 0) {
+/**
+ * Schedule the next batch
+ */
+proto.schedule = function() {
+	var This;
+	if (!this.timer) {
+		This = this;
+		this.timer = setTimeout(function() { This.process(); }, 0);
+	}
+};
 
-				command = this.commands.shift();
-				result = GPU.execute(command);
-				
-				if (!result) {
-					this.commands.unshift(command);
-					this.schedule();
-					return;
-				}
+GPU.CommandQueue = CommandQueue;
 
-				now = Date.now();
 
-				if (this.commands.length > 0 && now - start > 200) {
-					this.schedule();
-					return;
-				}
-			}
-
-			this.driver.present();
-		};
-
-		CommandQueue.schedule = function() {
-			var This;
-			if (!this.timer) {
-				This = this;
-				this.timer = setTimeout(function() { This.process(); }, 0);
-			}
-		};
-		
-		return CommandQueue.Constructor;
-
-	}());
-
-}(GPU));
 

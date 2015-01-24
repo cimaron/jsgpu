@@ -20,15 +20,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-(function(cnvgl) {
-
-
-	cnvgl.fragment = function() {
-		this.attrib = null;
-		this.result = null;
-		this.color = new Float32Array(4);
-	};
-
-
-}(cnvgl));
+/**
+ * Fragment Object Class
+ */
+function Fragment() {
+	this.attrib = null;
+	this.result = null;
+	this.color = new Float32Array(4);
+};
 

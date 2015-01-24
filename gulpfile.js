@@ -38,7 +38,8 @@ gulp.task('clean', function(cb) {
  */
 gulp.task('gpu-all', [], function() {
 	return gulp.src([
-		'src/library/*.js',
+		'src/library/util.js',
+		'src/gpu.js',
 		'src/**/*.js'
 		])
 		.pipe(concat('gpu.part.js'))

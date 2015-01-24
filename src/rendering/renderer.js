@@ -19,96 +19,74 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-cnvgl_renderer = (function() {
+/**
+ * Renderer Class
+ */
+function cnvgl_renderer() {
+	this.clipping = new cnvgl_rendering_clipping(this);
+	this.culling = new cnvgl_rendering_culling(this);
+	this.interpolate = new cnvgl_rendering_interpolate(this);
+	this.primitive = new cnvgl_rendering_primitive(this);
+	this.fragment = new cnvgl_rendering_fragment(this);
+	this.vertex = new cnvgl_rendering_vertex(this);
+}
 
-	//Internal Constructor
-	function Initializer() {
+proto = cnvgl_renderer.prototype;
 
-		//public:
-		this.clipping = null;
-		this.culling = null;
-		this.fragment = null;
-		this.interpolate = null;
-		this.primitive = null;
-		this.vertex = null;
+/**
+ * Send a vertex
+ */
+proto.send = function(state, mode, vertex) {
+	if (!vertex.processed) {
+		this.vertex.process(state, vertex);
 	}
+	this.primitive.send(state, mode, vertex);
+};
 
-	var cnvgl_renderer = jClass('cnvgl_renderer', Initializer);
+/**
+ * Finish vertex
+ */
+proto.end = function(mode) {
+	this.primitive.end(mode);
+};
 
-	//public:
+/**
+ * Check depth
+ */
+proto.checkDepth = function(state, i, z) {
+	var depth, pass;
 
-	cnvgl_renderer.cnvgl_renderer = function() {
-		this.clipping = new cnvgl_rendering_clipping(this);
-		this.culling = new cnvgl_rendering_culling(this);
-		this.interpolate = new cnvgl_rendering_interpolate(this);
-		this.primitive = new cnvgl_rendering_primitive(this);
-		this.fragment = new cnvgl_rendering_fragment(this);
-		this.vertex = new cnvgl_rendering_vertex(this);
-	};
+	depth = state.depthBuffer[i];
 
-	cnvgl_renderer.send = function(state, mode, vertex) {
-		if (!vertex.processed) {
-			this.vertex.process(state, vertex);
-		}
-		this.primitive.send(state, mode, vertex);
-	};
-
-	cnvgl_renderer.end = function(mode) {
-		this.primitive.end(mode);
-	};
-
-	cnvgl_renderer.checkDepth = function(state, i, z) {
-		var depth, pass;
-
-		depth = state.depthBuffer[i];
-
-		switch (state.depthFunc) {
-			case cnvgl.NEVER:
-				pass = false;
-				break;
-			case cnvgl.ALWAYS:
-				pass = true;
-				break;
-			case cnvgl.LESS:
-				pass = z < depth;
-				break;
-			case cnvgl.LEQUAL:
-				pass = z <= depth;
-				break;
-			case cnvgl.EQUAL:
-				pass = z == depth;
-				break;
-			case cnvgl.GREATER:
-				pass = z > depth;
-				break;
-			case cnvgl.GEQUAL:
-				pass = z >= depth;
-				break;
-			case cnvgl.NOTEQUAL:
-				pass = z != depth;
-				break;
-			default:
-				pass = true;
-		}		
-		return pass;
-	};
-
-	return cnvgl_renderer.Constructor;
-
-}());
+	switch (state.depthFunc) {
+		case cnvgl.NEVER:
+			pass = false;
+			break;
+		case cnvgl.ALWAYS:
+			pass = true;
+			break;
+		case cnvgl.LESS:
+			pass = z < depth;
+			break;
+		case cnvgl.LEQUAL:
+			pass = z <= depth;
+			break;
+		case cnvgl.EQUAL:
+			pass = z == depth;
+			break;
+		case cnvgl.GREATER:
+			pass = z > depth;
+			break;
+		case cnvgl.GEQUAL:
+			pass = z >= depth;
+			break;
+		case cnvgl.NOTEQUAL:
+			pass = z != depth;
+			break;
+		default:
+			pass = true;
+	}		
+	return pass;
+};
 
 
-
-include('drivers/cnvGL/gpu/rendering/clipping.js');
-include('drivers/cnvGL/gpu/rendering/culling.js');
-include('drivers/cnvGL/gpu/rendering/fragment.js');
-include('drivers/cnvGL/gpu/rendering/interpolate.js');
-include('drivers/cnvGL/gpu/rendering/primitive.js');
-include('drivers/cnvGL/gpu/rendering/vertex.js');
-include('drivers/cnvGL/gpu/rendering/primitive/point.js');
-include('drivers/cnvGL/gpu/rendering/primitive/line.js');
-include('drivers/cnvGL/gpu/rendering/primitive/triangle.js');
-
-include('drivers/cnvGL/gpu/rendering/objects/primitive.js');
-include('drivers/cnvGL/gpu/rendering/objects/vertex.js');
-include('drivers/cnvGL/gpu/rendering//objects/fragment.js');

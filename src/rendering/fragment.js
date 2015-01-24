@@ -19,148 +19,149 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-cnvgl_rendering_fragment = (function() {
-
-	//Internal Constructor
-	function Initializer() {
-		//public:
-		this.renderer = null;
-	}
-
-	var cnvgl_rendering_fragment = jClass('cnvgl_rendering_fragment', Initializer);
-
-	//public:
-
-	cnvgl_rendering_fragment.cnvgl_rendering_fragment = function(renderer) {
+/**
+ * Fragment Rendering Class
+ */
+function cnvgl_rendering_fragment(renderer) {
 		this.renderer = renderer;
-	};
+}
 
-	cnvgl_rendering_fragment.loadAttributes = function(state, f) {
-		var attr, i, j;
+var proto = cnvgl_rendering_fragment.prototype;
 
-		for (i = 0; i < state.activeVarying.length; i++) {
-			attr = state.activeVarying[i];
+/**
+ * Load attributes into shader
+ */
+proto.loadAttributes = function(state, f) {
+	var attr, i, j;
 
-			if (attr) {
-				for (j = 0; j < attr; j++) {
-					GPU.memory.varying[4 * i + j] = f.attrib[4 * i + j];	
-				}
+	for (i = 0; i < state.activeVarying.length; i++) {
+		attr = state.activeVarying[i];
+
+		if (attr) {
+			for (j = 0; j < attr; j++) {
+				GPU.memory.varying[4 * i + j] = f.attrib[4 * i + j];	
 			}
 		}
-	};
+	}
+};
 
-	cnvgl_rendering_fragment.process = function(state, f) {
-		var i;
+/**
+ * Process fragment
+ */
+proto.process = function(state, f) {
+	var i;
 
-		this.loadAttributes(state, f);
-		
-		GPU.executeFragment();
-	};
-
-	cnvgl_rendering_fragment.write = function(state, i, frag) {
-		var c_buffer, c, result, c_mask;
-
-		if (state.depthMask) {
-			state.depthBuffer[i] = frag.gl_FragDepth;
-		}
-
-		i <<= 2;
-
-		result = GPU.memory.result;
-		c = frag.color;
-		c[0] = result[0] * 255;
-		c[1] = result[1] * 255;
-		c[2] = result[2] * 255;
-		c[3] = result[3] * 255;
-
-		c_buffer = state.colorBuffer.data;
-
-		if (state.blendEnabled) {
-			this.blend(state, c, c[0], c[1], c[2], c[3], c_buffer[i], c_buffer[i + 1], c_buffer[i + 2], c_buffer[i + 3]);
-		}
-
-		c_mask = state.colorMask;
-		c_buffer[i    ] = c_mask[0] & (c[0] + .5)|0; //round(frag.r)
-		c_buffer[i + 1] = c_mask[1] & (c[1] + .5)|0; //round(frag.g)
-		c_buffer[i + 2] = c_mask[2] & (c[2] + .5)|0; //round(frag.b)
-		c_buffer[i + 3] = c_mask[3] & (c[3] + .5)|0; //round(frag.a)		
-	};
+	this.loadAttributes(state, f);
 	
-	cnvgl_rendering_fragment.blend = function(state, color, sr, sg, sb, sa, dr, dg, db, da) {
-		var state, a_sr, a_sg, a_sb, a_sa, a_dr, a_dg, a_db, a_da;
-		
-		switch (state.blendSrcA) {
-			case cnvgl.ONE:
-				a_sr = a_sg = a_sb = a_sa = (1);
-				break;
-			case cnvgl.ZERO:
-				a_sr = a_sg = a_sb = a_sa = (0);
-				break;
-			case cnvgl.SRC_ALPHA:
-				a_sr = a_sg = a_sb = a_sa = (sa / 255);
-				break;
-			case cnvgl.ONE_MINUS_SRC_ALPHA:
-				a_sr = a_sg = a_sb = a_sa = (1 - (sa / 255));
-				break;
-			case cnvgl.DST_ALPHA:
-				a_sr = a_sg = a_sb = a_sa = (da / 255);
-				break;
-			case cnvgl.ONE_MINUS_DST_ALPHA:
-				a_sr = a_sg = a_sb = a_sa = (1 - (da / 255));
-				break;
-			default:
-				throw new Error('Blend source ' + state.blendSrcA + ' not implemented');
-		}
+	GPU.executeFragment();
+};
 
-		switch (state.blendDestA) {
-			case cnvgl.ONE:
-				a_dr = a_dg = a_db = a_da = (1);
-				break;
-			case cnvgl.ZERO:
-				a_dr = a_dg = a_db = a_da = (0);
-				break;
-			case cnvgl.SRC_ALPHA:
-				a_dr = a_dg = a_db = a_da = (sa / 255);
-				break;
-			case cnvgl.ONE_MINUS_SRC_ALPHA:
-				a_dr = a_dg = a_db = a_da = (1 - (sa / 255));
-				break;
-			case cnvgl.DST_ALPHA:
-				a_dr = a_dg = a_db = a_da = (da / 255);
-				break;
-			case cnvgl.ONE_MINUS_DST_ALPHA:
-				a_dr = a_dg = a_db = a_da = (1 - (da / 255));
-				break;
-			default:
-				throw new Error('Blend source ' + state.blendSrcD + ' not implemented');					
-		}
+/**
+ * Write fragment output
+ */
+proto.write = function(state, i, frag) {
+	var c_buffer, c, result, c_mask;
 
-		switch (state.blendEquationRGB) {
-			case cnvgl.FUNC_ADD:
-				color[0] = (a_sr * sr) + (a_dr * dr);
-				color[1] = (a_sg * sg) + (a_dg * dg);
-				color[2] = (a_sb * sb) + (a_db * db);
-				break;
-			default:
-				throw new Error('Blend function ' + state.blendEquationRGB + ' not implemented');									
-		}
+	if (state.depthMask) {
+		state.depthBuffer[i] = frag.gl_FragDepth;
+	}
 
-		switch (state.blendEquationA) {
-			case cnvgl.FUNC_ADD:
-				color[3] = (a_sa * sa) + (a_da * da);
-				break;
-			default:
-				throw new Error('Blend function ' + state.blendEquationRGB + ' not implemented');									
-		}
-		
-		if (color[0] > 255) { color[0] = 255; }
-		if (color[1] > 255) { color[1] = 255; }
-		if (color[2] > 255) { color[2] = 255; }
-		if (color[3] > 255) { color[3] = 255; }
-		
-	};
+	i <<= 2;
 
-	return cnvgl_rendering_fragment.Constructor;
+	result = GPU.memory.result;
+	c = frag.color;
+	c[0] = result[0] * 255;
+	c[1] = result[1] * 255;
+	c[2] = result[2] * 255;
+	c[3] = result[3] * 255;
 
-}());
+	c_buffer = state.colorBuffer.data;
+
+	if (state.blendEnabled) {
+		this.blend(state, c, c[0], c[1], c[2], c[3], c_buffer[i], c_buffer[i + 1], c_buffer[i + 2], c_buffer[i + 3]);
+	}
+
+	c_mask = state.colorMask;
+	c_buffer[i    ] = c_mask[0] & (c[0] + .5)|0; //round(frag.r)
+	c_buffer[i + 1] = c_mask[1] & (c[1] + .5)|0; //round(frag.g)
+	c_buffer[i + 2] = c_mask[2] & (c[2] + .5)|0; //round(frag.b)
+	c_buffer[i + 3] = c_mask[3] & (c[3] + .5)|0; //round(frag.a)		
+};
+
+/**
+ * Blend colors
+ */
+proto.blend = function(state, color, sr, sg, sb, sa, dr, dg, db, da) {
+	var state, a_sr, a_sg, a_sb, a_sa, a_dr, a_dg, a_db, a_da;
+	
+	switch (state.blendSrcA) {
+		case cnvgl.ONE:
+			a_sr = a_sg = a_sb = a_sa = (1);
+			break;
+		case cnvgl.ZERO:
+			a_sr = a_sg = a_sb = a_sa = (0);
+			break;
+		case cnvgl.SRC_ALPHA:
+			a_sr = a_sg = a_sb = a_sa = (sa / 255);
+			break;
+		case cnvgl.ONE_MINUS_SRC_ALPHA:
+			a_sr = a_sg = a_sb = a_sa = (1 - (sa / 255));
+			break;
+		case cnvgl.DST_ALPHA:
+			a_sr = a_sg = a_sb = a_sa = (da / 255);
+			break;
+		case cnvgl.ONE_MINUS_DST_ALPHA:
+			a_sr = a_sg = a_sb = a_sa = (1 - (da / 255));
+			break;
+		default:
+			throw new Error('Blend source ' + state.blendSrcA + ' not implemented');
+	}
+
+	switch (state.blendDestA) {
+		case cnvgl.ONE:
+			a_dr = a_dg = a_db = a_da = (1);
+			break;
+		case cnvgl.ZERO:
+			a_dr = a_dg = a_db = a_da = (0);
+			break;
+		case cnvgl.SRC_ALPHA:
+			a_dr = a_dg = a_db = a_da = (sa / 255);
+			break;
+		case cnvgl.ONE_MINUS_SRC_ALPHA:
+			a_dr = a_dg = a_db = a_da = (1 - (sa / 255));
+			break;
+		case cnvgl.DST_ALPHA:
+			a_dr = a_dg = a_db = a_da = (da / 255);
+			break;
+		case cnvgl.ONE_MINUS_DST_ALPHA:
+			a_dr = a_dg = a_db = a_da = (1 - (da / 255));
+			break;
+		default:
+			throw new Error('Blend source ' + state.blendSrcD + ' not implemented');					
+	}
+
+	switch (state.blendEquationRGB) {
+		case cnvgl.FUNC_ADD:
+			color[0] = (a_sr * sr) + (a_dr * dr);
+			color[1] = (a_sg * sg) + (a_dg * dg);
+			color[2] = (a_sb * sb) + (a_db * db);
+			break;
+		default:
+			throw new Error('Blend function ' + state.blendEquationRGB + ' not implemented');									
+	}
+
+	switch (state.blendEquationA) {
+		case cnvgl.FUNC_ADD:
+			color[3] = (a_sa * sa) + (a_da * da);
+			break;
+		default:
+			throw new Error('Blend function ' + state.blendEquationRGB + ' not implemented');									
+	}
+	
+	if (color[0] > 255) { color[0] = 255; }
+	if (color[1] > 255) { color[1] = 255; }
+	if (color[2] > 255) { color[2] = 255; }
+	if (color[3] > 255) { color[3] = 255; }
+	
+};
 

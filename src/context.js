@@ -23,20 +23,21 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (function(GPU) {
 
 	GPU.Context = function() {
+
 		this.activeVarying = [];
-		this.blendEnabled = cnvgl.FALSE;
-		this.blendDestA = cnvgl.ZERO;
-		this.blendDestRGB = cnvgl.ZERO;
+		this.blendEnabled = false;
+		this.blendDestA = 0;
+		this.blendDestRGB = 0;
 		this.blendEquationA = cnvgl.FUNC_ADD;
 		this.blendEquationRGB = cnvgl.FUNC_ADD;
-		this.blendSrcA = cnvgl.ONE;
-		this.blendSrcRGB = cnvgl.ONE;
+		this.blendSrcA = 1;
+		this.blendSrcRGB = 1;
 		this.clearColor = null;
 		this.clearDepth = null;
 		this.clearStencil = null;
 		this.colorBuffer = null;
 		this.colorMask = [0xFF, 0xFF, 0xFF, 0xFF];
-		this.cullFlag = cnvgl.FALSE;
+		this.cullFlag = false;
 		this.cullFrontFace = cnvgl.CCW;
 		this.cullFaceMode = cnvgl.BACK;
 		this.depthBuffer = null;
@@ -44,7 +45,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		this.depthMask = cnvgl.TRUE;
 		this.depthTest = null;
 		this.mulitsampleCoverageValue = 1;
-		this.mulitsampleCoverageInvert = cnvgl.FALSE;
+		this.mulitsampleCoverageInvert = false;
 		this.scissorX = 0;
 		this.scissorY = 0;
 		this.scissorWidth = 0;
@@ -59,12 +60,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		this.stencilWriteMaskFront = ~0;
 		this.stencilWriteMaskBack = ~0;
 
+		/*
 		this.stencilFailFuncBack
 		this.stencilFailFuncFront
 		this.stencilZFailFuncBack
 		this.stencilZFailFuncFront
 		this.stencilZPassFuncBack
 		this.stencilZPassFuncFront
+		*/
 
 		this.viewportF = 1;
 		this.viewportH = 0;
