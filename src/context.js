@@ -19,63 +19,76 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ *
+ */
+function Context() {
 
-(function(GPU) {
+	this.activeVarying = [];
+	this.blendEnabled = false;
+	this.blendDestA = 0;
+	this.blendDestRGB = 0;
+	this.blendEquationA = cnvgl.FUNC_ADD;
+	this.blendEquationRGB = cnvgl.FUNC_ADD;
+	this.blendSrcA = 1;
+	this.blendSrcRGB = 1;
+	this.clearColor = null;
+	this.clearDepth = null;
+	this.clearStencil = null;
+	this.colorBuffer = null;
+	this.colorMask = [0xFF, 0xFF, 0xFF, 0xFF];
+	this.cullFlag = false;
+	this.cullFrontFace = cnvgl.CCW;
+	this.cullFaceMode = cnvgl.BACK;
+	this.depthBuffer = null;
+	this.depthFunc = cnvgl.LESS;
+	this.depthMask = cnvgl.TRUE;
+	this.depthTest = null;
+	this.mulitsampleCoverageValue = 1;
+	this.mulitsampleCoverageInvert = false;
+	this.scissorX = 0;
+	this.scissorY = 0;
+	this.scissorWidth = 0;
+	this.scissorHeight = 0;
+	this.stencilBuffer = null;
+	this.stencilFuncFront = cnvgl.ALWAYS;
+	this.stencilFuncBack = cnvgl.ALWAYS;
+	this.stencilRefFront = 0;
+	this.stencilRefBack = 0;
+	this.stencilValueMaskFront = ~0;
+	this.stencilValueMaskBack = ~0;
+	this.stencilWriteMaskFront = ~0;
+	this.stencilWriteMaskBack = ~0;
 
-	GPU.Context = function() {
+	/*
+	this.stencilFailFuncBack
+	this.stencilFailFuncFront
+	this.stencilZFailFuncBack
+	this.stencilZFailFuncFront
+	this.stencilZPassFuncBack
+	this.stencilZPassFuncFront
+	*/
 
-		this.activeVarying = [];
-		this.blendEnabled = false;
-		this.blendDestA = 0;
-		this.blendDestRGB = 0;
-		this.blendEquationA = cnvgl.FUNC_ADD;
-		this.blendEquationRGB = cnvgl.FUNC_ADD;
-		this.blendSrcA = 1;
-		this.blendSrcRGB = 1;
-		this.clearColor = null;
-		this.clearDepth = null;
-		this.clearStencil = null;
-		this.colorBuffer = null;
-		this.colorMask = [0xFF, 0xFF, 0xFF, 0xFF];
-		this.cullFlag = false;
-		this.cullFrontFace = cnvgl.CCW;
-		this.cullFaceMode = cnvgl.BACK;
-		this.depthBuffer = null;
-		this.depthFunc = cnvgl.LESS;
-		this.depthMask = cnvgl.TRUE;
-		this.depthTest = null;
-		this.mulitsampleCoverageValue = 1;
-		this.mulitsampleCoverageInvert = false;
-		this.scissorX = 0;
-		this.scissorY = 0;
-		this.scissorWidth = 0;
-		this.scissorHeight = 0;
-		this.stencilBuffer = null;
-		this.stencilFuncFront = cnvgl.ALWAYS;
-		this.stencilFuncBack = cnvgl.ALWAYS;
-		this.stencilRefFront = 0;
-		this.stencilRefBack = 0;
-		this.stencilValueMaskFront = ~0;
-		this.stencilValueMaskBack = ~0;
-		this.stencilWriteMaskFront = ~0;
-		this.stencilWriteMaskBack = ~0;
+	this.viewportF = 1;
+	this.viewportH = 0;
+	this.viewportN = 0;
+	this.viewportW = 0;
+	this.viewportX = 0;
+	this.viewportY = 0;	
+}
 
-		/*
-		this.stencilFailFuncBack
-		this.stencilFailFuncFront
-		this.stencilZFailFuncBack
-		this.stencilZFailFuncFront
-		this.stencilZPassFuncBack
-		this.stencilZPassFuncFront
-		*/
+/**
+ * Create a new context
+ */
+GPU.createContext = function() {
+	var ctx;
+	
+	ctx = new Context();
+	
+	Texture.initializeContext(ctx);
 
-		this.viewportF = 1;
-		this.viewportH = 0;
-		this.viewportN = 0;
-		this.viewportW = 0;
-		this.viewportX = 0;
-		this.viewportY = 0;
-	};
+	return ctx;
+};
 
-}(GPU));
+
 

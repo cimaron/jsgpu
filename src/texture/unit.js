@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2011 Cimaron Shanahan
+Copyright (c) 2014 Cimaron Shanahan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -19,42 +19,54 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-GPU.initialize = function() {
+/**
+ * Texture Unit Class
+ */
+function TextureUnit() {
+	this.reset();
+}
 
-	this.capabilities = {
-		texture_units : 32
-	};
+proto = TextureUnit.prototype;
 
-	this.renderer = new cnvgl_renderer();
-
-	Texture.initialize();
+/**
+ * Reset texture image data
+ */
+proto.reset = function() {
+	this.images = [];
+	this.min_func = Texture.func.nearest;
+	this.max_func = Texture.func.nearest;
 };
 
 /**
- * Query device features
- *
- * @param   string   cap   Capability Name (optional)
- *
- * @return  mixed
+ * Upload texture image
  */
-GPU.queryDevice = function(cap) {
-	var ret, n;
+proto.uploadImage = function(i, data, width, height) {
+	var img;
 
-	if (cap && this.capabilities[cap]) {
-		return this.capabilities[cap];
+	img = new TextureImage(data, width, height);
+	this.images[i] = img;
+};
+
+/**
+ * Set filter function
+ */
+proto.setFilterFunction = function(filter, fn) {
+	var func;
+	
+	switch (fn) {
+		case 0: //GPU.constants.texture.func_nearest
+			func = Texture.func.nearest;
+			break
+		default:
+		case 1: //GPU.constnats.texture.func_linear
+			func = Texture.func.linear;
 	}
 	
-	//Clone capabilities
-	ret = {};
-	for (n in this.capabilities) {
-		ret[n] = this.capabilities[n];
+	//GPU.constants.texture.min_filter = 0, max_filter = 1
+	if (filter == 1) {
+		this.max_func = func;	
+	} else {
+		this.min_func = func;	
 	}
-
-	return ret;
 };
-
-/**
- * Constants
- */
-GPU.constants = {};
 

@@ -159,9 +159,13 @@ GPU.commands.uploadAttributes = function(ctx, cmd, location, size, stride, si, d
 };
 
 GPU.commands.uploadTexture = function(ctx, cmd, unit, texture_obj) {
-	GPU.texture.upload(unit, texture_obj);
-	return true;
+	return Texture.upload(ctx, unit, texture_obj);
 };
+
+GPU.commands.setTextureUnitFilterFunc = function(ctx, cmd, unit, filter, fn) {
+	return Texture.setUnitFilterFunction(ctx, unit, filter, fn);
+};
+									  
 
 GPU.commands.uploadUniforms = function(ctx, cmd, location, data, slots, components) {
 	var i, j, mem, row, s;
