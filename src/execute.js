@@ -158,15 +158,6 @@ GPU.commands.uploadAttributes = function(ctx, cmd, location, size, stride, si, d
 	return true;
 };
 
-GPU.commands.uploadTexture = function(ctx, cmd, unit, texture_obj) {
-	return Texture.upload(ctx, unit, texture_obj);
-};
-
-GPU.commands.setTextureUnitFilterFunc = function(ctx, cmd, unit, filter, fn) {
-	return Texture.setUnitFilterFunction(ctx, unit, filter, fn);
-};
-									  
-
 GPU.commands.uploadUniforms = function(ctx, cmd, location, data, slots, components) {
 	var i, j, mem, row, s;
 
@@ -182,6 +173,29 @@ GPU.commands.uploadUniforms = function(ctx, cmd, location, data, slots, componen
 	}
 
 	return true;
+};
+
+
+
+/**
+ * Set Depth Func Command
+ */
+GPU.commands.setDepthFunc = function(ctx, cmd, fn) {
+	return Fragment.setDepthFunc(ctx, fn);
+};
+
+/**
+ * Set Texture Unit Filter Func Command
+ */
+GPU.commands.setTextureUnitFilterFunc = function(ctx, cmd, unit, filter, fn) {
+	return Texture.setUnitFilterFunction(ctx, unit, filter, fn);
+};
+
+/**
+ * Upload Texture Command
+ */
+GPU.commands.uploadTexture = function(ctx, cmd, unit, texture_obj) {
+	return Texture.upload(ctx, unit, texture_obj);
 };
 
 

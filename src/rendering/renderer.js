@@ -50,43 +50,4 @@ proto.end = function(mode) {
 	this.primitive.end(mode);
 };
 
-/**
- * Check depth
- */
-proto.checkDepth = function(state, i, z) {
-	var depth, pass;
-
-	depth = state.depthBuffer[i];
-
-	switch (state.depthFunc) {
-		case cnvgl.NEVER:
-			pass = false;
-			break;
-		case cnvgl.ALWAYS:
-			pass = true;
-			break;
-		case cnvgl.LESS:
-			pass = z < depth;
-			break;
-		case cnvgl.LEQUAL:
-			pass = z <= depth;
-			break;
-		case cnvgl.EQUAL:
-			pass = z == depth;
-			break;
-		case cnvgl.GREATER:
-			pass = z > depth;
-			break;
-		case cnvgl.GEQUAL:
-			pass = z >= depth;
-			break;
-		case cnvgl.NOTEQUAL:
-			pass = z != depth;
-			break;
-		default:
-			pass = true;
-	}		
-	return pass;
-};
-
 

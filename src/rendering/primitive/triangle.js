@@ -134,9 +134,10 @@ proto.rasterize = function(state, prim) {
  * Rasterize single scanline of triangle
  */
 proto.rasterizeScanline = function(state, yi, x_start, x_end) {
-	var int, xi_start, xi_end, xi, i, v;
+	var int, xi_start, xi_end, xi, i, v, depthFunc;
 
 	int = this.renderer.interpolate;
+	depthFunc = Fragment.fn.depthFunc;
 
 	//left and right bounds
 	xi_start = (x_start|0) + .5; //floor(x_start) + .5
@@ -159,7 +160,7 @@ proto.rasterizeScanline = function(state, yi, x_start, x_end) {
 		//If so, this needs to run after processing the fragment
 		if (state.depthTest) {
 			this.frag.gl_FragDepth = int.interpolateTriangle(this.v1.zw, this.v2.zw, this.v3.zw);
-			if (!this.renderer.checkDepth(state, i, this.frag.gl_FragDepth)) {
+			if (!depthFunc(state, i, this.frag.gl_FragDepth)) {
 				i++;
 				continue;
 			}
