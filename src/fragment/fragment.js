@@ -19,6 +19,8 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+Fragment = {};
+
 /**
  * Initialize texture units
  */
@@ -31,90 +33,9 @@ Fragment.initialize = function() {
 };
 
 /**
- * Set the current depth function
- *
- * @param   function   func   Depth function
- */
-Fragment.setDepthFunc = function(ctx, func) {
-
-	if (!(func in this.fn.depth)) {
-		throw new Error("JSGPU: Invalid depth function");	
-	}
-
-	this.fn.depthFunc = func;
-};
-
-/**
  * Fragment functions
  */
-Fragment.fn = {
-	depthFunc : null
-};
-
-/**
- * Depth functions
- */
-Fragment.fn.depth = {
-
-	never : function(state, i, z) {
-		return false;
-	},
-	
-	always : function(state, i, z) {
-		return true;	
-	},
-	
-	less : function(state, i, z) {
-		var depth;
-		
-		depth = state.depthBuffer[i];
-
-		return z < depth;
-	},
-	
-	ltEqual : function(state, i, z) {
-		var depth;
-		
-		depth = state.depthBuffer[i];
-
-		return z <= depth;			
-	},
-
-	equal : function(state, i, z) {
-		var depth;
-		
-		depth = state.depthBuffer[i];
-
-		return z == depth;			
-	},
-
-	greater : function(state, i, z) {
-		var depth;
-		
-		depth = state.depthBuffer[i];
-
-		return z > depth;	
-	},
-
-	gtEqual : function(state, i, z) {
-		var depth;
-		
-		depth = state.depthBuffer[i];
-
-		return z >= depth;	
-	},
-
-	nEqual : function(state, i, z) {
-		var depth;
-		
-		depth = state.depthBuffer[i];
-
-		return z != depth;	
-	}
-
-};
-
-Fragment.fn.depthFunc = Fragment.fn.depth.less;
+Fragment.fn = {};
 
 GPU.constants.fragment = {};
 

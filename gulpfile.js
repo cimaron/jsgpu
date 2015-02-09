@@ -40,6 +40,7 @@ gulp.task('gpu-all', [], function() {
 	return gulp.src([
 		'src/library/util.js',
 		'src/gpu.js',
+		'src/fragment/fragment.js',
 		'src/**/*.js'
 		])
 		.pipe(concat('gpu.part.js'))

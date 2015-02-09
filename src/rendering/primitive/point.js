@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 function cnvgl_rendering_primitive_point(renderer) {
 
 	this.renderer = renderer;
-	this.frag = new Fragment();
+	this.frag = new fragment();
 
 	this.prim = null;
 }

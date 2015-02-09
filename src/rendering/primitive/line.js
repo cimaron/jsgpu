@@ -26,7 +26,7 @@ function cnvgl_rendering_primitive_line(renderer) {
 	this.renderer = renderer;
 	
 	this.prim = null;
-	this.frag = new Fragment();
+	this.frag = new fragment();
 }
 
 proto = cnvgl_rendering_primitive_line.prototype;

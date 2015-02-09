@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Fragment Object Class
  */
-function Fragment() {
+function fragment() {
 	this.attrib = null;
 	this.result = null;
 	this.color = new Float32Array(4);
