@@ -20,13 +20,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-GPU.memory = {};
-
-GPU.memory.temp = null;
-GPU.memory.uniforms = null;
-GPU.memory.attributes = null;
-GPU.memory.cur_attributes = null;
-GPU.memory.varying = null;
-GPU.memory.result = null;
-
+/**
+ * Fragment Object Class
+ */
+function FragmentObject() {
+	this.attrib = null;
+	this.result = null;
+	this.color = new Float32Array(4);
+};
 

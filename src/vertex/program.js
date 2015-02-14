@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2011 Cimaron Shanahan
+Copyright (c) 2014 Cimaron Shanahan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -19,40 +19,14 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
-var shader, result, vertex, temp, program, memory;
-var tex;
-
-shader = {
-	MAX_UNIFORMS : 128,
-	MAX_FRAGMENT_UNIFORM_COMPONENTS : 128,
-	MAX_VERTEX_ATTRIBS : 16,
-	MAX_VARYING_VECTORS : 12,
-	MAX_TEMPORARIES : 12
+/**
+ * Upload Vertex Shader
+ */
+Vertex.uploadVertexShader = function(ctx, prog) {
+	this.fn.vertexProgram = prog;
 };
 
-GPU.executeVertex = function(){};
-GPU.executeFragment = function(){};
 
-GPU.memory.attributes_src = cnvgl.malloc(shader.MAX_VERTEX_ATTRIBS, 1);
-
-GPU.uploadShaders = function(state, prgm) {
-
-	state.prgm = prgm;
-
-	this.executeVertex = prgm.vertex;
-	this.executeFragment = prgm.fragment;
-
-	GPU.memory.uniforms = prgm.context.uniform_f32;
-	GPU.memory.attributes = prgm.context.attribute_f32;
-	GPU.memory.varying = prgm.context.varying_f32;
-	GPU.memory.result = prgm.context.result_f32;		
-};
-
-GPU.shader = shader;
-
-//
-var tex;
-shader.setTexFunc = function(f) { tex = f; };
+Vertex.fn.vertexProgram = function() {};
 
 

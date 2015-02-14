@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 function cnvgl_rendering_primitive_triangle(renderer) {
 
 	this.renderer = renderer;
-	this.frag = new fragment();
+	this.frag = new FragmentObject();
 
 	this.prim = null;
 	this.v1 = null;

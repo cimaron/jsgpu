@@ -41,6 +41,7 @@ gulp.task('gpu-all', [], function() {
 		'src/library/util.js',
 		'src/gpu.js',
 		'src/fragment/fragment.js',
+		'src/vertex/vertex.js',
 		'src/texture/image.js',
 		'src/texture/object.js',
 		'src/**/*.js'

@@ -51,9 +51,6 @@ proto = cnvgl_rendering_interpolate.prototype;
  */
 proto.setVertices = function(v1, v2, v3) {
 
-	//this.varying = this.ctx.shader.activeProgram.varying.names;
-	//this.attributes = this.ctx.shader.activeProgram.attributes.names;
-
 	this.v1 = [v1.xw, v1.yw, v1.zw, v1.w];
 	this.v2 = [v2.xw, v2.yw, v2.zw, v2.w];
 	if (v3) {

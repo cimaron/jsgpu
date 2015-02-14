@@ -69,7 +69,7 @@ GPU.commands.drawPrimitives = function(ctx, cmd, mode, first, count) {
 		cache.i = first;
 	}
 	for (; cache.i < count; cache.i++) {
-		vertex = new Vertex(cache.i);
+		vertex = new VertexObject(cache.i);
 		GPU.renderer.send(ctx, mode, vertex);
 
 		now = Date.now();
@@ -101,7 +101,7 @@ GPU.commands.drawIndexedPrimitives = function(ctx, cmd, mode, indices, first, co
 		if (cache.data[idx]) {
 			vertex = cache.data[idx];
 		} else {
-			vertex = new Vertex(idx);
+			vertex = new VertexObject(idx);
 			cache.data[idx] = vertex;
 		}
 
@@ -119,9 +119,16 @@ GPU.commands.drawIndexedPrimitives = function(ctx, cmd, mode, indices, first, co
 	cache.i = -1;
 	return true;
 };
-	
-GPU.commands.uploadProgram = function(ctx, cmd, data) {
-	GPU.uploadShaders(ctx, data);
+
+/**
+ * Upload shader programs
+ *
+ * @param   object   ctx   Context
+ * @param   string   cmd   Command
+ * @param   object   prog  Programs 
+ */
+GPU.commands.uploadProgram = function(ctx, cmd, prog) {
+	Program.uploadProgram(ctx, prog);
 	return true;
 };
 
@@ -131,7 +138,7 @@ GPU.commands.uploadAttributes = function(ctx, cmd, location, size, stride, si, d
 	ds = Math.ceil((data.length - si) / (size + stride)) * 4;
 	dest = cnvgl.malloc(ds, 1);
 
-	GPU.memory.attributes_src[location] = {
+	Program.attributes_src[location] = {
 		start : location * 4,
 		size : size,
 		stride : stride,
@@ -161,7 +168,7 @@ GPU.commands.uploadAttributes = function(ctx, cmd, location, size, stride, si, d
 GPU.commands.uploadUniforms = function(ctx, cmd, location, data, slots, components) {
 	var i, j, mem, row, s;
 
-	mem = GPU.memory.uniforms;
+	mem = Program.uniforms;
 	row = 4 * location;
 	s = 0;
 

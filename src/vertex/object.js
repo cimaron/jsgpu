@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Vertex Object Class
  */
-function Vertex(i) {
+function VertexObject(i) {
 
 	this.processed = false;
 	

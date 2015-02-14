@@ -39,7 +39,7 @@ proto.loadAttributes = function(state, f) {
 
 		if (attr) {
 			for (j = 0; j < attr; j++) {
-				GPU.memory.varying[4 * i + j] = f.attrib[4 * i + j];	
+				Program.varying[4 * i + j] = f.attrib[4 * i + j];	
 			}
 		}
 	}
@@ -52,8 +52,8 @@ proto.process = function(state, f) {
 	var i;
 
 	this.loadAttributes(state, f);
-	
-	GPU.executeFragment();
+
+	Fragment.fn.fragmentProgram();
 };
 
 /**
@@ -68,7 +68,7 @@ proto.write = function(state, i, frag) {
 
 	i <<= 2;
 
-	result = GPU.memory.result;
+	result = Program.result;
 	c = frag.color;
 	c[0] = result[0] * 255;
 	c[1] = result[1] * 255;

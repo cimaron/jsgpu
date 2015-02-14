@@ -27,8 +27,10 @@ GPU.initialize = function() {
 
 	this.renderer = new cnvgl_renderer();
 
-	Texture.initialize();
+	Program.initialize();
 	Fragment.initialize();
+	Vertex.initialize();
+	Texture.initialize();
 };
 
 /**

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2011 Cimaron Shanahan
+Copyright (c) 2014 Cimaron Shanahan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -20,56 +20,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 /**
- * Point Renderer Class
+ * Upload Fragment Shader
  */
-function cnvgl_rendering_primitive_point(renderer) {
-
-	this.renderer = renderer;
-	this.frag = new FragmentObject();
-
-	this.prim = null;
-}
-
-proto = cnvgl_rendering_primitive_point.prototype;
-
-/**
- * Render point
- */
-proto.render = function(state, prim) {
-	var num;
-
-	num = this.renderer.clipping.clipPoint(prim);
-
-	if (num) {
-		this.renderClipped(state, prim);
-	}
-
+Fragment.uploadFragmentShader = function(ctx, prog) {
+	this.fn.fragmentProgram = prog;
 };
 
-/**
- * Render clipped point
- */
-proto.renderClipped = function(state, prim) {
-	var vw, v, x, y, i;
 
-	this.prim = prim;
-
-	v = prim.vertices[0];
-	x = Math.round(v.xw);
-	y = Math.round(v.yw);
-
-	vw = state.viewportW;
-
-	/*
-	for (i in v.varying) {
-		this.frag.varying[i] = v.varying[i];
-	}
-	*/
-
-	i = (vw * y + x);
-
-	this.renderer.fragment.process(state, this.frag);
-	this.renderer.fragment.write(state, i, this.frag);
-};
+Fragment.fn.fragmentProgram = function() {};
 
 

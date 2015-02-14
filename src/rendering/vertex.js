@@ -34,7 +34,7 @@ proto = cnvgl_rendering_vertex.prototype;
 proto.loadAttributes = function(state, n) {
 	var src, attr, i, j;
 	
-	src = GPU.memory.attributes_src;
+	src = Program.attributes_src;
 
 	for (i = 0; i < src.length; i++) {
 
@@ -45,7 +45,7 @@ proto.loadAttributes = function(state, n) {
 		}
 
 		for (j = 0; j < attr.size; j++) {
-			GPU.memory.attributes[attr.start + j] = attr.data[n * 4 + j];
+			Program.attributes[attr.start + j] = attr.data[n * 4 + j];
 		}
 	}
 	
@@ -58,10 +58,10 @@ proto.process = function(state, v) {
 
 	this.loadAttributes(state, v.i);
 
-	GPU.executeVertex();
+	Vertex.fn.vertexProgram();
 
-	v.varying = new Float32Array(GPU.memory.varying);
-	v.result = new Float32Array(GPU.memory.result);
+	v.varying = new Float32Array(Program.varying);
+	v.result = new Float32Array(Program.result);
 
 	v.x = v.result[0];
 	v.y = v.result[1];
