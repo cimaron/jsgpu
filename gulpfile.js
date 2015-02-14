@@ -41,6 +41,8 @@ gulp.task('gpu-all', [], function() {
 		'src/library/util.js',
 		'src/gpu.js',
 		'src/fragment/fragment.js',
+		'src/texture/image.js',
+		'src/texture/object.js',
 		'src/**/*.js'
 		])
 		.pipe(concat('gpu.part.js'))
@@ -89,7 +91,7 @@ gulp.task('default', ['clean', 'gpu-all'], function() {
 /**
  * Watch
  */
-gulp.task('watch', function() {
+gulp.task('watch', ['default'], function() {
 	gulp.watch([
 		'src/**/*.js'
 	], ['default']);

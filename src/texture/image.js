@@ -19,13 +19,28 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+var TextureImage = {};
+
+TextureImage.formats = {
+	rgba : 0x1,
+	rgb  : 0x2
+};
+
 /**
  * Texture Image Class
  */
-function TextureImage(data, width, height) {
-	this.data = data;
+function TextureImage2D(data, width, height, fmt) {
+	
+	this.data = data;	
 	this.width = width;
 	this.height = height;
+
+	this.format = fmt;
 }
 
+
+GPU.constants.texture = GPU.constants.texture || {};
+GPU.constants.texture.image = {
+	format : TextureImage.formats,
+};
 

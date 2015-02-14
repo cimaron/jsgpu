@@ -185,17 +185,37 @@ GPU.commands.setDepthFunc = function(ctx, cmd, fn) {
 };
 
 /**
- * Set Texture Unit Filter Func Command
+ * Set texture unit filter function
+ *
+ * @param   object   ctx  Context
+ * @param   string   cmd   Command
+ * @param   int      u     Texture unit number
+ * @param   object   int   Filter
+ * @param   object   int   Filter function
+ *
+ * @return  bool
  */
-GPU.commands.setTextureUnitFilterFunc = function(ctx, cmd, unit, filter, fn) {
-	return Texture.setUnitFilterFunction(ctx, unit, filter, fn);
+GPU.commands.setTextureUnitFilterFunc = function(ctx, cmd, u, filter, fn) {
+	var unit;
+
+	unit = Texture.units[u];
+	unit.setFilterFunction(filter, fn);
+	return true;
 };
 
 /**
  * Upload Texture Command
  */
-GPU.commands.uploadTexture = function(ctx, cmd, unit, texture_obj) {
-	return Texture.upload(ctx, unit, texture_obj);
+GPU.commands.texImage2D = function(ctx, cmd, u, target, level, internalFormat, width, height, format, type, data) {
+	var unit, img, obj;
+
+	unit = TextureUnit.active;
+	img = new TextureImage2D(data, width, height, format);
+
+	obj = unit.targets[target];
+	obj.images[level] = img;
+	
+	return true;
 };
 
 

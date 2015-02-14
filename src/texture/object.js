@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014 Cimaron Shanahan
+Copyright (c) 2011 Cimaron Shanahan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -20,56 +20,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 /**
- * Texture Unit Class
+ * Texture Object Class
  */
-function TextureUnit() {
-
-	this.targets = [];
-
-	this.min_func = null;
-	this.max_func = null;
-
-	this.reset();
+function TextureObject() {
+	this.images = [];
 }
 
-proto = TextureUnit.prototype;
-
-TextureUnit.active = null;
-
-/**
- * Reset texture image data
- */
-proto.reset = function() {
-	this.min_func = Texture.func.nearest;
-	this.max_func = Texture.func.nearest;
-};
-
-/**
- * Set filter function
- */
-proto.setFilterFunction = function(filter, fn) {
-	var func;
-	
-	switch (fn) {
-		case 0: //GPU.constants.texture.func_nearest
-			func = Texture.func.nearest;
-			break
-		default:
-		case 1: //GPU.constnats.texture.func_linear
-			func = Texture.func.linear;
-	}
-	
-	//GPU.constants.texture.min_filter = 0, max_filter = 1
-	if (filter == 1) {
-		this.max_func = func;	
-	} else {
-		this.min_func = func;	
-	}
-};
-
-
-GPU.constants.texture = GPU.constants.texture || {};
-GPU.constants.texture.targets = {
-	texture_2d : 0x0
-};
-
+TextureObject.default_2D = new TextureObject();
