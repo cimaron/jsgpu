@@ -24,10 +24,32 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 var Texture = {};
 
+GPU.Texture = Texture;
 
 Texture.temp = Float32Array(4 * 4); //Used for texture filters
 Texture.units = [];
 Texture.func = {};
+
+/**
+ * Define constants and enums
+ */
+var cnst = {};
+GPU.constants.texture = cnst;
+
+cnst.filter = {
+	min : 0,
+	max : 1
+};
+
+cnst.func = {
+	nearest : 0,
+	linear : 1,
+	//Not implemented yet
+	linear_mipmap_nearest : 1,
+	nearest_mipmap_linear : 1
+};
+
+
 
 
 /**
@@ -36,20 +58,10 @@ Texture.func = {};
 Texture.initialize = function() {
 	var i, unit;
 
-	//Initialize default 2D texture object
-	TextureImage2D.def = new TextureImage2D(new Uint8Array([0, 0, 0, 1]), 1, 1, TextureImage.formats.rgba);
-	TextureObject.default_2D.images[0] = TextureImage2D.def;
-
 	//initialize texture units
 	for (i = 0; i < GPU.capabilities.texture_units; i++) {
-
-		unit = new TextureUnit();
-		this.units[i] = unit;
-
-		unit.targets[0] = TextureObject.default_2D;
+		this.units[i] = new TextureUnit();
 	}
-
-	TextureUnit.active = this.units[0];
 };
 
 /**
@@ -78,7 +90,7 @@ Texture.func.tex = function(c, ci, src, si, sampler, target) {
 	unit = Texture.units[sampler];
 	tex = unit.targets[target];
 
-	unit.min_func(c, ci, tex, s, t);
+	tex.min_filter(c, ci, tex, s, t);
 };
 
 
@@ -185,18 +197,5 @@ Texture.func.linear = function(c, ci, tex, s, t) {
 
 GPU.getTexFunction = function() {
 	return Texture.func.tex;
-};
-
-
-
-GPU.constants.texture = GPU.constants.texture || {};
-GPU.constants.texture.filter = {
-	min : 0x0,
-	max : 0x1
-};
-
-GPU.constants.texture.func = {
-	nearest : 0x0,
-	linear : 0x1
 };
 

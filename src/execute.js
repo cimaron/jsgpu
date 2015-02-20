@@ -192,36 +192,47 @@ GPU.commands.setDepthFunc = function(ctx, cmd, fn) {
 };
 
 /**
- * Set texture unit filter function
+ * Bind texture
  *
- * @param   object   ctx  Context
- * @param   string   cmd   Command
- * @param   int      u     Texture unit number
- * @param   object   int   Filter
- * @param   object   int   Filter function
+ * @param   object   ctx      Context
+ * @param   string   cmd      Command
+ * @param   int      u        Texture unit number
+ * @param   int      target   Filter
+ * @param   object   state    State
  *
  * @return  bool
  */
-GPU.commands.setTextureUnitFilterFunc = function(ctx, cmd, u, filter, fn) {
-	var unit;
+GPU.commands.bindTexture = function(ctx, cmd, target, tex_obj, u) {
+	var unit, obj;
 
 	unit = Texture.units[u];
-	unit.setFilterFunction(filter, fn);
+	unit.targets[target] = tex_obj;
+
 	return true;
 };
+
+GPU.commands.texParameterTextureMinFilter = function(ctx, cmd, tex_obj, param) {
+	tex_obj.setMinFilter(param);
+	return true;
+};
+
+GPU.commands.texParameterTextureMagFilter = function(ctx, cmd, tex_obj, param) {
+	tex_obj.setMagFilter(param);
+	return true;
+};
+
+
+
 
 /**
  * Upload Texture Command
  */
-GPU.commands.texImage2D = function(ctx, cmd, u, target, level, internalFormat, width, height, format, type, data) {
-	var unit, img, obj;
+GPU.commands.texImage2D = function(ctx, cmd, tex_obj, level, internalFormat, width, height, format, type, data) {
+	var img;
 
-	unit = TextureUnit.active;
 	img = new TextureImage2D(data, width, height, format);
+	tex_obj.images[level] = img;
 
-	obj = unit.targets[target];
-	obj.images[level] = img;
-	
 	return true;
 };
 

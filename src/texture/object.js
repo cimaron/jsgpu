@@ -23,7 +23,58 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Texture Object Class
  */
 function TextureObject() {
+
 	this.images = [];
+	this.images.push(TextureImage.default_2D);
+	
+	this.min_filter = Texture.func.nearest;
+	this.mag_filter = Texture.func.nearest;
 }
 
+GPU.TextureObject = TextureObject;
+
 TextureObject.default_2D = new TextureObject();
+
+
+proto = TextureObject.prototype;
+
+/**
+ * Get filter function by enum
+ *
+ * @return  function
+ */
+proto.getFilterFunction = function(fn) {
+
+	switch (fn) {
+
+		case 0: //GPU.constants.texture.func_nearest
+			return Texture.func.nearest;
+			break
+
+		default:
+		case 1: //GPU.constants.texture.func_linear
+			return Texture.func.linear;
+	}
+};
+
+
+/**
+ * Set min filter function
+ *
+ * @param   int   fn   function
+ */
+proto.setMinFilter = function(fn) {
+	this.min_filter = this.getFilterFunction(fn);
+};
+
+/**
+ * Set mag filter function
+ *
+ * @param   int   fn   function
+ */
+proto.setMagFilter = function(fn) {
+	this.mag_filter = this.getFilterFunction(fn);
+};
+
+
+

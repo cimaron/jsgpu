@@ -21,10 +21,21 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 var TextureImage = {};
 
+GPU.TextureImage = TextureImage;
+
 TextureImage.formats = {
 	rgba : 0x1,
 	rgb  : 0x2
 };
+
+
+/**
+ * constants
+ */
+GPU.constants.texture.image = {
+	format : TextureImage.formats,
+};
+
 
 /**
  * Texture Image Class
@@ -38,9 +49,7 @@ function TextureImage2D(data, width, height, fmt) {
 	this.format = fmt;
 }
 
+GPU.TextureImage2D = TextureImage2D;
+TextureImage.default_2D = new TextureImage2D(new Uint8Array([0, 0, 0, 255]), 1, 1, TextureImage.formats.rgba);
 
-GPU.constants.texture = GPU.constants.texture || {};
-GPU.constants.texture.image = {
-	format : TextureImage.formats,
-};
 
