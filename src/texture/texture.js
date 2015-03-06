@@ -26,7 +26,7 @@ var Texture = {};
 
 GPU.Texture = Texture;
 
-Texture.temp = Float32Array(4 * 4); //Used for texture filters
+Texture.temp = new Float32Array(4 * 4); //Used for texture filters
 Texture.units = [];
 Texture.func = {};
 
