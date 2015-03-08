@@ -188,8 +188,23 @@ GPU.commands.uploadUniforms = function(ctx, cmd, location, data, slots, componen
  * Set Depth Func Command
  */
 GPU.commands.setDepthFunc = function(ctx, cmd, fn) {
-	return Fragment.setDepthFunc(ctx, fn);
+	Fragment.setDepthFunc(ctx, fn);
+	return true;
 };
+
+
+/**
+ * Set blend equations
+ */
+GPU.commands.blendEqs = function(ctx, rgb, a) {
+
+	Fragment.setBlendEqRgb(rgb);
+	Fragment.setBlendEqA(a);
+
+	return true;
+};
+
+
 
 /**
  * Bind texture

@@ -140,24 +140,11 @@ proto.blend = function(state, color, sr, sg, sb, sa, dr, dg, db, da) {
 			throw new Error('Blend source ' + state.blendSrcD + ' not implemented');					
 	}
 
-	switch (state.blendEquationRGB) {
-		case cnvgl.FUNC_ADD:
-			color[0] = (a_sr * sr) + (a_dr * dr);
-			color[1] = (a_sg * sg) + (a_dg * dg);
-			color[2] = (a_sb * sb) + (a_db * db);
-			break;
-		default:
-			throw new Error('Blend function ' + state.blendEquationRGB + ' not implemented');									
-	}
+	color[0] = Fragment.fn.blendEqRgb(sr, dr, a_sr, a_dr);
+	color[1] = Fragment.fn.blendEqRgb(sg, dg, a_sg, a_dg);
+	color[2] = Fragment.fn.blendEqRgb(sb, db, a_sb, a_db);
+	color[3] = Fragment.fn.blendEqA(sa, da, a_sa, a_da);
 
-	switch (state.blendEquationA) {
-		case cnvgl.FUNC_ADD:
-			color[3] = (a_sa * sa) + (a_da * da);
-			break;
-		default:
-			throw new Error('Blend function ' + state.blendEquationRGB + ' not implemented');									
-	}
-	
 	if (color[0] > 255) { color[0] = 255; }
 	if (color[1] > 255) { color[1] = 255; }
 	if (color[2] > 255) { color[2] = 255; }

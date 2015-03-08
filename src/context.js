@@ -28,8 +28,6 @@ function Context() {
 	this.blendEnabled = false;
 	this.blendDestA = 0;
 	this.blendDestRGB = 0;
-	this.blendEquationA = cnvgl.FUNC_ADD;
-	this.blendEquationRGB = cnvgl.FUNC_ADD;
 	this.blendSrcA = 1;
 	this.blendSrcRGB = 1;
 	this.clearColor = null;
