@@ -25,11 +25,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @param   function   func   Depth function
  */
 Fragment.setDepthFunc = function(ctx, func) {
-
-	if (!(func in this.fn.depth)) {
-		throw new Error("JSGPU: Invalid depth function");	
-	}
-
 	this.fn.depthFunc = func;
 };
 
@@ -97,4 +92,9 @@ Fragment.fn.depth = {
 };
 
 Fragment.fn.depthFunc = Fragment.fn.depth.less;
+
+//Set up constants
+for (var i in Fragment.fn.depth) {
+	GPU.constants['fnDepth' + i.charAt(0).toUpperCase() + i.slice(1)] = Fragment.fn.depth[i];
+}
 
