@@ -173,7 +173,7 @@ GPU.commands.uploadUniforms = function(ctx, cmd, location, data, slots, componen
 	s = 0;
 
 	for (i = 0; i < slots; i++) {
-		for (j = 0; j < components; j++) {
+		for (j = 0; j < 4; j++) {
 			mem[row + j] = data[s++];
 		}
 		row += 4;

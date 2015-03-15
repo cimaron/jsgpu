@@ -44,8 +44,8 @@ proto.loadAttributes = function(state, n) {
 			break;
 		}
 
-		for (j = 0; j < attr.size; j++) {
-			Program.attributes[attr.start + j] = attr.data[n * 4 + j];
+		for (j = 0; j < 4; j++) {
+			Program.attributes[attr.start + j] = j < attr.size ? attr.data[n * 4 + j] : 1.0;
 		}
 	}
 	
