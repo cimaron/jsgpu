@@ -78,7 +78,7 @@ proto.write = function(state, i, frag) {
 	c_buffer = state.colorBuffer.data;
 
 	if (state.blendEnabled) {
-		this.blend(state, c, c[0], c[1], c[2], c[3], c_buffer[i], c_buffer[i + 1], c_buffer[i + 2], c_buffer[i + 3]);
+		this.blend(c, c_buffer, i);
 	}
 
 	c_mask = state.colorMask;
@@ -91,64 +91,22 @@ proto.write = function(state, i, frag) {
 /**
  * Blend colors
  */
-proto.blend = function(state, color, sr, sg, sb, sa, dr, dg, db, da) {
-	var state, a_sr, a_sg, a_sb, a_sa, a_dr, a_dg, a_db, a_da;
-	
-	switch (state.blendSrcA) {
-		case cnvgl.ONE:
-			a_sr = a_sg = a_sb = a_sa = (1);
-			break;
-		case cnvgl.ZERO:
-			a_sr = a_sg = a_sb = a_sa = (0);
-			break;
-		case cnvgl.SRC_ALPHA:
-			a_sr = a_sg = a_sb = a_sa = (sa / 255);
-			break;
-		case cnvgl.ONE_MINUS_SRC_ALPHA:
-			a_sr = a_sg = a_sb = a_sa = (1 - (sa / 255));
-			break;
-		case cnvgl.DST_ALPHA:
-			a_sr = a_sg = a_sb = a_sa = (da / 255);
-			break;
-		case cnvgl.ONE_MINUS_DST_ALPHA:
-			a_sr = a_sg = a_sb = a_sa = (1 - (da / 255));
-			break;
-		default:
-			throw new Error('Blend source ' + state.blendSrcA + ' not implemented');
-	}
+proto.blend = function(src, dest, i) {
+	var sf, df;
 
-	switch (state.blendDestA) {
-		case cnvgl.ONE:
-			a_dr = a_dg = a_db = a_da = (1);
-			break;
-		case cnvgl.ZERO:
-			a_dr = a_dg = a_db = a_da = (0);
-			break;
-		case cnvgl.SRC_ALPHA:
-			a_dr = a_dg = a_db = a_da = (sa / 255);
-			break;
-		case cnvgl.ONE_MINUS_SRC_ALPHA:
-			a_dr = a_dg = a_db = a_da = (1 - (sa / 255));
-			break;
-		case cnvgl.DST_ALPHA:
-			a_dr = a_dg = a_db = a_da = (da / 255);
-			break;
-		case cnvgl.ONE_MINUS_DST_ALPHA:
-			a_dr = a_dg = a_db = a_da = (1 - (da / 255));
-			break;
-		default:
-			throw new Error('Blend source ' + state.blendSrcD + ' not implemented');					
-	}
+	sf = Fragment.fn.blendFnSrc(src[3], dest[i + 3]);
+	df = Fragment.fn.blendFnDest(src[3], dest[i + 3]);
 
-	color[0] = Fragment.fn.blendEqRgb(sr, dr, a_sr, a_dr);
-	color[1] = Fragment.fn.blendEqRgb(sg, dg, a_sg, a_dg);
-	color[2] = Fragment.fn.blendEqRgb(sb, db, a_sb, a_db);
-	color[3] = Fragment.fn.blendEqA(sa, da, a_sa, a_da);
+	src[0] = Fragment.fn.blendEqRgb(src[0], dest[i    ], sf, df);
+	src[1] = Fragment.fn.blendEqRgb(src[1], dest[i + 1], sf, df);
+	src[2] = Fragment.fn.blendEqRgb(src[2], dest[i + 2], sf, df);
+	src[3] = Fragment.fn.blendEqA(  src[3], dest[i + 3], sf, df);
 
-	if (color[0] > 255) { color[0] = 255; }
-	if (color[1] > 255) { color[1] = 255; }
-	if (color[2] > 255) { color[2] = 255; }
-	if (color[3] > 255) { color[3] = 255; }
+
+	if (src[0] > 255) { src[0] = 255; }
+	if (src[1] > 255) { src[1] = 255; }
+	if (src[2] > 255) { src[2] = 255; }
+	if (src[3] > 255) { src[3] = 255; }
 	
 };
 

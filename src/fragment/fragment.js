@@ -26,16 +26,10 @@ var Fragment = {};
  */
 Fragment.initialize = function() {
 	var f;
-
-	for (f in this.fn.depth) {
-		GPU.constants.fragment['depthFunc_' + f] = this.fn.depth[f];
-	}
 };
 
 /**
  * Fragment functions
  */
 Fragment.fn = {};
-
-GPU.constants.fragment = {};
 

@@ -26,10 +26,6 @@ function Context() {
 
 	this.activeVarying = [];
 	this.blendEnabled = false;
-	this.blendDestA = 0;
-	this.blendDestRGB = 0;
-	this.blendSrcA = 1;
-	this.blendSrcRGB = 1;
 	this.clearColor = null;
 	this.clearDepth = null;
 	this.clearStencil = null;

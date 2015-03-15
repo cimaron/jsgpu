@@ -196,10 +196,21 @@ GPU.commands.setDepthFunc = function(ctx, cmd, fn) {
 /**
  * Set blend equations
  */
-GPU.commands.blendEqs = function(ctx, rgb, a) {
+GPU.commands.blendEqs = function(ctx, cmd, rgb, a) {
 
-	Fragment.setBlendEqRgb(rgb);
-	Fragment.setBlendEqA(a);
+	Fragment.setBlendEqRgb(ctx, rgb);
+	Fragment.setBlendEqA(ctx, a);
+
+	return true;
+};
+
+/**
+ * Set blend equations
+ */
+GPU.commands.blendFunc = function(ctx, cmd, src, dest) {
+
+	Fragment.setBlendFnSrc(ctx, src);
+	Fragment.setBlendFnDest(ctx, dest);
 
 	return true;
 };

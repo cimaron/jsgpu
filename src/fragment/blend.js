@@ -25,11 +25,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @param   function   func   Blend equation
  */
 Fragment.setBlendEqRgb = function(ctx, func) {
-
-	if (!(func in this.fn.blend)) {
-		throw new Error("JSGPU: Invalid blend equation");	
-	}
-
 	this.fn.blendEqRgb = func;
 };
 
@@ -39,13 +34,28 @@ Fragment.setBlendEqRgb = function(ctx, func) {
  * @param   function   func   Blend equation
  */
 Fragment.setBlendEqA = function(ctx, func) {
-
-	if (!(func in this.fn.blend)) {
-		throw new Error("JSGPU: Invalid blend equation");	
-	}
-
 	this.fn.blendEqA = func;
 };
+
+/**
+ * Set the current blend equation
+ *
+ * @param   function   func   Blend function
+ */
+Fragment.setBlendFnSrc = function(ctx, func) {
+	this.fn.blendFnSrc = func;
+};
+
+/**
+ * Set the current blend equation
+ *
+ * @param   function   func   Blend function
+ */
+Fragment.setBlendFnDest = function(ctx, func) {
+	this.fn.blendFnDest = func;
+};
+
+
 
 
 Fragment.fn.blend = {
@@ -63,9 +73,43 @@ Fragment.fn.blend = {
 
 	eqRevSub : function(s, d, a, b) {
 		return 	(d * b) - (s * a);
+	},
+	
+	fnOne : function(sa, da) {
+		return 1;
+	},
+
+	fnZero : function(sa, da) {
+		return 0;
+	},
+	
+	fnSrcAlpha : function(sa, da) {
+		return sa / 255;
+	},
+	
+	fnOneMinusSrcAlpha : function(sa, da) {
+		return 1 - (sa / 255);
+	},
+
+	fnDestAlpha : function(sa, da) {
+		return da / 255;
+	},
+
+	fnOneMinusDestAlpha : function(sa, da) {
+		return 1 - (da / 255);
 	}
+	
 };
 
 Fragment.fn.blendEqRgb = Fragment.fn.blend.eqAdd;
 Fragment.fn.blendEqA = Fragment.fn.blend.eqAdd;
+
+Fragment.fn.blendFnSrc = Fragment.fn.blend.fnOne;
+Fragment.fn.blendFnDest = Fragment.fn.blend.fnOne;
+
+//Set up constants
+for (var i in Fragment.fn.blend) {
+	GPU.constants['fnBlend' + i.charAt(0).toUpperCase() + i.slice(1)] = Fragment.fn.blend[i];
+}
+
 
