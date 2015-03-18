@@ -44,7 +44,7 @@ Fragment.fn.depth = {
 	less : function(state, i, z) {
 		var depth;
 		
-		depth = state.depthBuffer[i];
+		depth = state.depthBuffer.data[i];
 
 		return z < depth;
 	},
@@ -52,7 +52,7 @@ Fragment.fn.depth = {
 	ltEqual : function(state, i, z) {
 		var depth;
 		
-		depth = state.depthBuffer[i];
+		depth = state.depthBuffer.data[i];
 
 		return z <= depth;			
 	},
@@ -60,7 +60,7 @@ Fragment.fn.depth = {
 	equal : function(state, i, z) {
 		var depth;
 		
-		depth = state.depthBuffer[i];
+		depth = state.depthBuffer.data[i];
 
 		return z == depth;			
 	},
@@ -68,7 +68,7 @@ Fragment.fn.depth = {
 	greater : function(state, i, z) {
 		var depth;
 		
-		depth = state.depthBuffer[i];
+		depth = state.depthBuffer.data[i];
 
 		return z > depth;	
 	},
@@ -76,7 +76,7 @@ Fragment.fn.depth = {
 	gtEqual : function(state, i, z) {
 		var depth;
 		
-		depth = state.depthBuffer[i];
+		depth = state.depthBuffer.data[i];
 
 		return z >= depth;	
 	},
@@ -84,7 +84,7 @@ Fragment.fn.depth = {
 	nEqual : function(state, i, z) {
 		var depth;
 		
-		depth = state.depthBuffer[i];
+		depth = state.depthBuffer.data[i];
 
 		return z != depth;	
 	}

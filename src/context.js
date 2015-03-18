@@ -26,9 +26,6 @@ function Context() {
 
 	this.activeVarying = [];
 	this.blendEnabled = false;
-	this.clearColor = null;
-	this.clearDepth = null;
-	this.clearStencil = null;
 	this.colorBuffer = null;
 	this.colorMask = [0xFF, 0xFF, 0xFF, 0xFF];
 	this.cullFlag = false;

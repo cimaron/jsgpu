@@ -20,21 +20,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-function BaseBuffer(size, type) {
-
-	this.size = size;
-
-	this.data = new type(size);
-
-	this.id = Objects.add(this);
-};
-
-
-
 /**
  * Color Buffer Class
  */
-function ColorBuffer(width, height) {
+function ColorBuffer(width, height, bpp) {
 
 	if (!height) {
 		height = 1;
@@ -42,19 +31,69 @@ function ColorBuffer(width, height) {
 
 	this.width = width;
 	this.height = height;
+	this.bpp = bpp || 4;
+	this.size = this.width * this.height * this.bpp;
 
-	BaseBuffer.apply(this, [this.width * this.height * 4, Uint8ClampedArray]);
+	this.data = new Uint8ClampedArray(this.size);
 }
 
-util.inherits(ColorBuffer, BaseBuffer);
+GPU.ColorBuffer = ColorBuffer;
 
 var proto = ColorBuffer.prototype;
 
+
 /**
  * Clear Buffer
+ *
+ * @param   array   color   Color value(s)
  */
 proto.clear = function(color) {
-	this.rect(0, 0, this.width - 1, this.height - 1, color);	
+	var i, d, s, c1, c2, c3, c4;
+
+	s = this.size;
+	d = this.data;
+
+	c1 = color[0];
+	c2 = this.bpp >= 2 ? color[1] : 0;
+	c3 = this.bpp >= 3 ? color[2] : 0;
+	c4 = this.bpp >= 4 ? color[3] : 0;
+
+	switch (this.bpp) {
+
+		case 1:			
+			for (i = 0; i < s; i++) {
+				d[i] = c1;
+			}
+			
+			break;
+
+		case 2:
+			for (i = 0; i < s; i += 2) {
+				d[i] = c1;
+				d[i + 1] = c2;
+			}
+			
+			break;
+
+		case 3:
+			for (i = 0; i < s; i += 3) {
+				d[i] = c1;
+				d[i + 1] = c2;
+				d[i + 2] = c3;
+			}
+			
+			break;
+
+		case 4:
+			for (i = 0; i < s; i += 4) {
+				d[i] = c1;
+				d[i + 1] = c2;
+				d[i + 2] = c3;
+				d[i + 3] = c4;
+			}
+
+			break;
+	}
 };
 
 /**
@@ -92,46 +131,5 @@ proto.rect = function(x1, y1, x2, y2, color) {
 	}
 
 };
-
-
-
-
-
-function DepthBuffer(width, height) {
-	var size;
-
-	if (height) {
-		size = width * height;
-	} else {
-		size = width;
-		height = 1;
-	}
-
-	this.width = width;
-	this.height = height;
-
-	this.buffer = new Float32Array(size);
-}
-
-
-
-
-
-/**
- * GPU Api
- */
-GPU.createColorBuffer = function(w, h, b) {
-	return new ColorBuffer(w, h, b);
-};
-
-GPU.execClearBuffer = function(buffer, color) {
-	buffer.clear(color);
-};
-
-GPU.execRectangle = function(buffer, x1, y1, x2, y2, color) {
-	buffer.rect(x1, y1, x2, y2, color);
-};
-
-
 
 

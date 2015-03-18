@@ -63,7 +63,7 @@ proto.write = function(state, i, frag) {
 	var c_buffer, c, result, c_mask;
 
 	if (state.depthMask) {
-		state.depthBuffer[i] = frag.gl_FragDepth;
+		state.depthBuffer.data[i] = frag.gl_FragDepth;
 	}
 
 	i <<= 2;

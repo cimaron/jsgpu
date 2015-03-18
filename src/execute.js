@@ -42,18 +42,23 @@ GPU.commands.setArray = function(ctx, cmd, name, index, value) {
 	return true;
 };
 
-GPU.commands.clear = function(ctx, cmd, mask) {
-	if (mask && cnvgl.COLOR_BUFFER_BIT) {
-		cnvgl.memseta(ctx.colorBuffer, 0, ctx.clearColor, ctx.colorBuffer.size);
-	}
-	if (mask && cnvgl.DEPTH_BUFFER_BIT) {
-		cnvgl.memset(ctx.depthBuffer, 0, ctx.clearDepth);
-	}
-	if (mask && cnvgl.STENCIL_BUFFER_BIT) {
-		cnvgl.memset(ctx.stencilBuffer, 0, ctx.clearStencil);
-	}
+
+GPU.commands.clearColorBuffer = function(ctx, cmd, value) {
+	ctx.colorBuffer.clear(value);
 	return true;
 };
+
+GPU.commands.clearDepthBuffer = function(ctx, cmd, value) {
+	ctx.depthBuffer.clear(value);
+	return true;
+};
+
+GPU.commands.clearStencilBuffer = function(ctx, cmd, value) {
+	ctx.stencilBuffer.clear(value);
+	return true;
+};
+
+
 
 var cache = {
 	i : -1,
