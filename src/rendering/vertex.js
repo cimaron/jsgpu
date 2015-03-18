@@ -22,11 +22,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Vertex Rendering Class
  */
-function cnvgl_rendering_vertex(renderer) {
+function RendererVertex(renderer) {
 	this.renderer = renderer;
 }
 
-proto = cnvgl_rendering_vertex.prototype;
+proto = RendererVertex.prototype;
 
 /**
  * Load vertex attributes into shader memory

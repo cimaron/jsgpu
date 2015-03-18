@@ -22,11 +22,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Fragment Rendering Class
  */
-function cnvgl_rendering_fragment(renderer) {
+function RendererFragment(renderer) {
 		this.renderer = renderer;
 }
 
-var proto = cnvgl_rendering_fragment.prototype;
+var proto = RendererFragment.prototype;
 
 /**
  * Load attributes into shader

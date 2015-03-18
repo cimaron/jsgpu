@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Triangle Rendering Class
  */
-function cnvgl_rendering_primitive_triangle(renderer) {
+function RendererPrimitiveTriangle(renderer) {
 
 	this.renderer = renderer;
 	this.frag = new FragmentObject();
@@ -33,7 +33,7 @@ function cnvgl_rendering_primitive_triangle(renderer) {
 	this.v3 = null;
 }
 
-proto = cnvgl_rendering_primitive_triangle.prototype;
+proto = RendererPrimitiveTriangle.prototype;
 
 /**
  * Render triangle

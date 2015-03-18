@@ -22,16 +22,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Renderer Class
  */
-function cnvgl_renderer() {
-	this.clipping = new cnvgl_rendering_clipping(this);
-	this.culling = new cnvgl_rendering_culling(this);
-	this.interpolate = new cnvgl_rendering_interpolate(this);
-	this.primitive = new cnvgl_rendering_primitive(this);
-	this.fragment = new cnvgl_rendering_fragment(this);
-	this.vertex = new cnvgl_rendering_vertex(this);
+function Renderer() {
+	this.clipping = new RendererClipping(this);
+	this.culling = new RendererCulling(this);
+	this.interpolate = new RendererInterpolate(this);
+	this.primitive = new RendererPrimitive(this);
+	this.fragment = new RendererFragment(this);
+	this.vertex = new RendererVertex(this);
 }
 
-proto = cnvgl_renderer.prototype;
+proto = Renderer.prototype;
 
 /**
  * Send a vertex

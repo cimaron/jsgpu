@@ -25,7 +25,7 @@ GPU.initialize = function() {
 		texture_units : 32
 	};
 
-	this.renderer = new cnvgl_renderer();
+	this.renderer = new Renderer();
 
 	Program.initialize();
 	Fragment.initialize();

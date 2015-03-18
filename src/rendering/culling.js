@@ -22,11 +22,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Culling renderer class
  */
-function cnvgl_rendering_culling(renderer) {
+function RendererCulling(renderer) {
 	this.renderer = renderer;
 }
 
-proto = cnvgl_rendering_culling.prototype;
+proto = RendererCulling.prototype;
 
 /**
  * Check cull

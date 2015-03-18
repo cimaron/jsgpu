@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Interpolate Rendering Class
  */
-function cnvgl_rendering_interpolate(renderer) {
+function RendererInterpolate(renderer) {
 
 	this.ctx = null;
 	this.renderer = renderer;
@@ -43,7 +43,7 @@ function cnvgl_rendering_interpolate(renderer) {
 	this.varying = null;
 }
 
-proto = cnvgl_rendering_interpolate.prototype;
+proto = RendererInterpolate.prototype;
 
 
 /**
@@ -62,7 +62,7 @@ proto.setVertices = function(v1, v2, v3) {
 };
 
 /*
-cnvgl_rendering_interpolate.interpolateAttributes = function(v1, v2, v3, dest) {
+RendererInterpolate.interpolateAttributes = function(v1, v2, v3, dest) {
 	var attribute, vi, vl, vs;
 	for (v in this.attribute) {
 		attribute = this.attribute[v];

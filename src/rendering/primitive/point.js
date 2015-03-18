@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Point Renderer Class
  */
-function cnvgl_rendering_primitive_point(renderer) {
+function RendererPrimitivePoint(renderer) {
 
 	this.renderer = renderer;
 	this.frag = new FragmentObject();
@@ -30,7 +30,7 @@ function cnvgl_rendering_primitive_point(renderer) {
 	this.prim = null;
 }
 
-proto = cnvgl_rendering_primitive_point.prototype;
+proto = RendererPrimitivePoint.prototype;
 
 /**
  * Render point

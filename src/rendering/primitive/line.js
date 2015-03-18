@@ -22,14 +22,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Line Primitive Rendering Class
  */
-function cnvgl_rendering_primitive_line(renderer) {
+function RendererPrimitiveLine(renderer) {
 	this.renderer = renderer;
 	
 	this.prim = null;
 	this.frag = new FragmentObject();
 }
 
-proto = cnvgl_rendering_primitive_line.prototype;
+proto = RendererPrimitiveLine.prototype;
 
 /**
  * Render

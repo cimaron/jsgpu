@@ -22,18 +22,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Primitive Rendering Class
  */
-function cnvgl_rendering_primitive(renderer) {
+function RendererPrimitive(renderer) {
 
 	this.renderer = renderer;
 
-	this.line = new cnvgl_rendering_primitive_line(renderer);
-	this.point = new cnvgl_rendering_primitive_point(renderer);
-	this.triangle = new cnvgl_rendering_primitive_triangle(renderer);
+	this.line = new RendererPrimitiveLine(renderer);
+	this.point = new RendererPrimitivePoint(renderer);
+	this.triangle = new RendererPrimitiveTriangle(renderer);
 	
 	this.vertices = [];
 }
 
-proto = cnvgl_rendering_primitive.prototype;
+proto = RendererPrimitive.prototype;
 
 /**
  * Send a vertex

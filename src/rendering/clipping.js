@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Clipping Renderer Class
  */
-function cnvgl_rendering_clipping(renderer) {
+function RendererClipping(renderer) {
 
 	this.ctx = null;
 	this.renderer = renderer;
@@ -39,7 +39,7 @@ function cnvgl_rendering_clipping(renderer) {
 	               [ 0,  0, -1]];
 }
 
-proto = cnvgl_rendering_clipping.prototype;
+proto = RendererClipping.prototype;
 
 /**
  * Clip point
