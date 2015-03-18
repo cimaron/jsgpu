@@ -79,7 +79,7 @@ Texture.initializeContext = function(ctx) {};
  * @param   int     sampler   Texture unit
  * @param   int     target    Target?
  */
-Texture.func.tex = function(c, ci, src, si, sampler, target) {
+Texture.func.tex2D = function(c, ci, src, si, sampler, target) {
 	var s, t,
 	    unit, tex
 		;
@@ -195,7 +195,7 @@ Texture.func.linear = function(c, ci, tex, s, t) {
 	c[ci + 3] = u0v0 * colors[3] + u1v0 * colors[7] + u0v1 * colors[11] + u1v1 * colors[15];
 };
 
-GPU.getTexFunction = function() {
-	return Texture.func.tex;
+GPU.getTexFunction2D = function() {
+	return Texture.func.tex2D;
 };
 
