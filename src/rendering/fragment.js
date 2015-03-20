@@ -62,18 +62,21 @@ proto.process = function(state, f) {
 proto.write = function(state, i, frag) {
 	var c_buffer, c, result, c_mask;
 
+	result = Program.result;
+
 	if (state.depthMask) {
-		state.depthBuffer.data[i] = frag.gl_FragDepth;
+		//gl_FragDepth = result.depth = result@0.z
+		state.depthBuffer.data[i] = Program.result[2];
 	}
 
 	i <<= 2;
 
-	result = Program.result;
 	c = frag.color;
-	c[0] = result[0] * 255;
-	c[1] = result[1] * 255;
-	c[2] = result[2] * 255;
-	c[3] = result[3] * 255;
+	//gl_FragColor = result.color = result@1
+	c[0] = result[4] * 255;
+	c[1] = result[5] * 255;
+	c[2] = result[6] * 255;
+	c[3] = result[7] * 255;
 
 	c_buffer = state.colorBuffer.data;
 
