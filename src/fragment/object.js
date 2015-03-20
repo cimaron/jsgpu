@@ -24,8 +24,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Fragment Object Class
  */
 function FragmentObject() {
-	this.attrib = new Float32Array(128);
-	this.result = new Float32Array(128);
+	this.attrib = new Float32Array(GPU.capabilities.vertex_attribute_vectors * 4);
+	this.result = new Float32Array(8);
 	this.color = new Float32Array(4);
 };
 

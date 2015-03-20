@@ -22,6 +22,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GPU.initialize = function() {
 
 	this.capabilities = {
+		vertex_attribute_vectors : 16,
+		vertex_uniform_vectors : 256,
+		varying_vectors : 16,
+		fragment_uniform_vectors : 256,
+
 		texture_units : 32
 	};
 

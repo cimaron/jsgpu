@@ -46,7 +46,7 @@ function VertexObject(i) {
 	this.i = i;
 
 	//allocate memory
-	this.varying = new Float32Array(128);
-	this.result = new Float32Array(128);
+	this.varying = new Float32Array(GPU.capabilities.varying_vectors * 4);
+	this.result = new Float32Array(8);
 };
 

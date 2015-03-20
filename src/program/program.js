@@ -29,7 +29,7 @@ Program.varying = null;
 Program.result = null;
 
 Program.initialize = function() {
-	this.attributes_src = new Array(GPU.constants.program.max_vertex_attribs);
+	this.attributes_src = new Array(GPU.capabilities.vertex_attribute_vectors);
 };
 
 Program.uploadProgram = function(ctx, prgm) {
@@ -43,12 +43,6 @@ Program.uploadProgram = function(ctx, prgm) {
 	this.attributes = prgm.context.attribute_f32;
 	this.varying = prgm.context.varying_f32;
 	this.result = prgm.context.result_f32;	
-};
-
-GPU.constants.program = {
-	max_vertex_attribs : 16,
-	max_varying_vectors : 12
-	//...
 };
 
 

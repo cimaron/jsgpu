@@ -61,8 +61,12 @@ proto.process = function(state, v) {
 
 	Vertex.fn.vertexProgram();
 
-	for (i = 0; i < 128; i++) {
+	//@todo: restrict to active varying
+	for (i = 0; i < v.varying.length; i++) {
 		v.varying[i] = Program.varying[i];
+	}
+
+	for (i = 0; i < 8; i++) {
 		v.result[i] = Program.result[i];
 	}
 
