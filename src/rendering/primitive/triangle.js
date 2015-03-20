@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 function RendererPrimitiveTriangle(renderer) {
 
 	this.renderer = renderer;
+
 	this.frag = new FragmentObject();
 
 	this.prim = null;
@@ -134,10 +135,7 @@ proto.rasterize = function(state, prim) {
  * Rasterize single scanline of triangle
  */
 proto.rasterizeScanline = function(state, yi, x_start, x_end) {
-	var int, xi_start, xi_end, xi, i, v, depthFunc;
-
-	int = this.renderer.interpolate;
-	depthFunc = Fragment.fn.depthFunc;
+	var xi_start, xi_end, xi, i;
 
 	//left and right bounds
 	xi_start = (x_start|0) + .5; //floor(x_start) + .5
@@ -152,30 +150,53 @@ proto.rasterizeScanline = function(state, yi, x_start, x_end) {
 	i = state.viewportW * (yi - .5) + (xi_start - .5);
 
 	for (xi = xi_start; xi <= xi_end; xi++) {
-
-		int.setPoint(xi, yi);
-
-		//Early depth test
-		//Need to add check for shader writing to depth value.
-		//If so, this needs to run after processing the fragment
-		if (state.depthTest) {
-			this.frag.gl_FragDepth = int.interpolateTriangle(this.v1.zw, this.v2.zw, this.v3.zw);
-			if (!depthFunc(state, i, this.frag.gl_FragDepth)) {
-				i++;
-				continue;
-			}
-		}
-
-		if (!this.frag.attrib) {
-			this.frag.attrib = new Float32Array(this.v1.varying);
-			this.frag.result = new Float32Array(this.v1.result);				
-		}
-		int.interpolateVarying(state, this.v1, this.v2, this.v3, this.frag.attrib);
-
-		this.renderer.fragment.process(state, this.frag);
-		this.renderer.fragment.write(state, i, this.frag);
-
+		this.rasterizeFragment(state, xi, yi, i);
 		i++;
-	}		
+	}
 };
 
+proto.rasterizeFragment = function(state, xi, yi, i) {
+	var rend;
+
+	rend = this.renderer;
+
+	rend.interpolate.setPoint(xi, yi);
+
+	//gl_FragCoord
+	Program.result[0] = rend.interpolate.interpolateTriangle(this.v1.xw, this.v2.xw, this.v3.xw);
+	Program.result[1] = rend.interpolate.interpolateTriangle(this.v1.yw, this.v2.yw, this.v3.yw);
+	//gl_FragDepth = result.depth = result[0].z
+	Program.result[2] = rend.interpolate.interpolateTriangle(this.v1.zw, this.v2.zw, this.v3.zw);
+	Program.result[3] = 1 / rend.interpolate.interpolateTriangle(this.v1.w, this.v2.w, this.v3.w);
+
+	//Early depth test
+	//Need to add check for shader writing to depth value.
+	//If so, this needs to run after processing the fragment
+	if (state.depthTest) {
+		if (!this.earlyZ(state, i)) {
+			return;	
+		}
+	}
+
+	rend.interpolate.interpolateVarying(state, this.v1, this.v2, this.v3, this.frag.attrib);
+
+	rend.fragment.process(state, this.frag);
+	rend.fragment.write(state, i, this.frag);	
+};
+
+/**
+ * Interpolate depth value and perform an early z test
+ *
+ * @param   object   state   State object
+ * @param   int      i       Pixel index
+ *
+ * @return  bool
+ */
+proto.earlyZ = function(state, i) {
+
+	if (!Fragment.fn.depthFunc(state, i, Program.result[2])) {
+		return false;
+	}
+
+	return true;
+};

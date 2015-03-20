@@ -46,7 +46,7 @@ function VertexObject(i) {
 	this.i = i;
 
 	//allocate memory
-	this.varying = null;
-	this.result = null;
+	this.varying = new Float32Array(128);
+	this.result = new Float32Array(128);
 };
 

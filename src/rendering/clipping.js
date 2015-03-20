@@ -115,8 +115,6 @@ proto.interpolate = function(state, v1, v2, amt) {
 	int.setPoint(xw, yw);
 
 	vr = new VertexObject();
-	vr.varying = new Float32Array(v1.varying);
-	vr.result = new Float32Array(v1.result);
 
 	//we don't need to interpolate all values, only those used in the rest of the rendering pipeline
 	vr.xw = v1.xw * namt + v2.xw * amt;

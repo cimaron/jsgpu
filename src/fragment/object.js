@@ -24,8 +24,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Fragment Object Class
  */
 function FragmentObject() {
-	this.attrib = null;
-	this.result = null;
+	this.attrib = new Float32Array(128);
+	this.result = new Float32Array(128);
 	this.color = new Float32Array(4);
 };
 
