@@ -173,8 +173,8 @@ proto.rasterizeFragment = function(state, xi, yi, i) {
 	//Need to add check for shader writing to depth value.
 	//If so, this needs to run after processing the fragment
 	if (state.depthTest) {
-		if (!this.earlyZ(state, i)) {
-			return;	
+		if (!Fragment.fn.depthFunc(state, i, Program.result[2])) {
+			return;
 		}
 	}
 
@@ -184,19 +184,3 @@ proto.rasterizeFragment = function(state, xi, yi, i) {
 	rend.fragment.write(state, i, this.frag);	
 };
 
-/**
- * Interpolate depth value and perform an early z test
- *
- * @param   object   state   State object
- * @param   int      i       Pixel index
- *
- * @return  bool
- */
-proto.earlyZ = function(state, i) {
-
-	if (!Fragment.fn.depthFunc(state, i, Program.result[2])) {
-		return false;
-	}
-
-	return true;
-};

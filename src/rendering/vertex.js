@@ -55,13 +55,16 @@ proto.loadAttributes = function(state, n) {
  * Process vertex
  */
 proto.process = function(state, v) {
+	var i;
 
 	this.loadAttributes(state, v.i);
 
 	Vertex.fn.vertexProgram();
 
-	v.varying = new Float32Array(Program.varying);
-	v.result = new Float32Array(Program.result);
+	for (i = 0; i < 128; i++) {
+		v.varying[i] = Program.varying[i];
+		v.result[i] = Program.result[i];
+	}
 
 	v.x = v.result[0];
 	v.y = v.result[1];
