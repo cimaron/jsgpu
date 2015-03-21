@@ -34,7 +34,7 @@ function ColorBuffer(width, height, bpp) {
 	this.bpp = bpp || 4;
 	this.size = this.width * this.height * this.bpp;
 
-	this.data = new Uint8ClampedArray(this.size);
+	this.data = new Uint8Array(this.size);
 }
 
 GPU.ColorBuffer = ColorBuffer;
